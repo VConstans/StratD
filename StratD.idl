@@ -16,6 +16,7 @@ module StratD
 	{
 		boolean ajoutJoueur(in Joueur j);
 		boolean ajoutProd(in Producteur p);
+		void ping();
 	};
 
 };

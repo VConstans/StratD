@@ -28,6 +28,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 		return true;	//TODO renvoyer bonne valeur
 	}
 
+
+	public void ping()
+	{
+		System.out.println("Coonection");
+	}
+
 	public static void main(String args[])
 	{
 		if (args.length != 2)
