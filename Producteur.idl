@@ -1,0 +1,4 @@
+interface Producteur
+{
+	bool demande_ressource(in int n);
+}
