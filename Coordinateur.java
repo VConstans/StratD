@@ -1,3 +1,11 @@
+import org.omg.CORBA.*;
+import org.omg.PortableServer.*;
+import java.util.*;
+import StratD.CoordinateurPOA;
+import StratD.Coordinateur;
+import StratD.JoueurPOA;
+import StratD.Joueur;
+
 public CoordinateurImpl extends CoordinateurPOA
 {
 
