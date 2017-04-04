@@ -1,0 +1,21 @@
+module StratD
+{
+	interface Joueur
+	{
+		boolean vole(in long n);
+	};
+
+
+	interface Producteur
+	{
+		boolean demandeRessource(in long n);
+	};
+
+
+	interface Coordinateur
+	{
+		boolean ajoutJoueur(in Joueur j);
+		boolean ajoutProd(in Producteur p);
+	};
+
+};
