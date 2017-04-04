@@ -1,25 +1,31 @@
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
 import java.util.*;
+import org.omg.CosNaming.*;
 import StratD.CoordinateurPOA;
 import StratD.Coordinateur;
 import StratD.JoueurPOA;
 import StratD.Joueur;
+import StratD.Producteur;
+import StratD.ProducteurPOA;
+import StratD.CoordinateurHelper;
 
-public CoordinateurImpl extends CoordinateurPOA
+public class CoordinateurImpl extends CoordinateurPOA
 {
 
-	Vector<Joueur>list_joueur = new Vector<Joueur>();
-	Vector<Producteur>list_prod = new Vector<Producteur>();
+	Vector<Joueur> list_joueur = new Vector<Joueur>();
+	Vector<Producteur> list_prod = new Vector<Producteur>();
 
 	public boolean ajoutJoueur(Joueur j)
 	{
 		list_joueur.addElement(j);
+		return true;	//TODO revoyer bonne valeur
 	}
 
 	public boolean ajoutProd(Producteur p)
 	{
 		list_prod.addElement(p);
+		return true;	//TODO renvoyer bonne valeur
 	}
 
 	public static void main(String args[])
@@ -40,7 +46,7 @@ public CoordinateurImpl extends CoordinateurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(coord) ;
-			Coordinateur href = ServeurChatHelper.narrow(ref) ;
+			Coordinateur href = CoordinateurHelper.narrow(ref) ;
 
 			// inscription de l'objet au service de noms
 			org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService") ;
