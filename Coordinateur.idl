@@ -1,5 +1,0 @@
-interface Coordinateur
-{
-	bool ajoutJoueur(in Joueur j);
-	bool ajoutProd(in Producteur p);
-}
