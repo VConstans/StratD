@@ -1,0 +1,13 @@
+case $1 in
+1)
+tnameserv -ORBInitialPort 1050 &
+;;
+2)
+java ProducteurImpl localhost 1050
+;;
+3)
+java CoordinateurImpl localhost 1050
+;;
+4)
+java JoueurImpl localhost 1050
+esac
