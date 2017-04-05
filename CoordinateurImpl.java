@@ -25,6 +25,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 	public boolean ajoutProd(Producteur p)
 	{
 		list_prod.addElement(p);
+		list_prod.get(0).annonce();
 		return true;	//TODO renvoyer bonne valeur
 	}
 

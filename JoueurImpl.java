@@ -6,14 +6,14 @@ import java.io.IOException;
 import org.omg.CosNaming.*;
 import StratD.Coordinateur;
 import StratD.CoordinateurHelper;
-import StratD.Producteur;
-import StratD.ProducteurPOA;
-import StratD.ProducteurHelper;
+import StratD.Joueur;
+import StratD.JoueurPOA;
+import StratD.JoueurHelper;
 
 
-public class ProducteurImpl extends ProducteurPOA
+public class JoueurImpl extends JoueurPOA
 {
-	Producteur producteur;
+	Joueur player;
 	Coordinateur cord;
 	ThreadRun thread;
 
@@ -25,12 +25,12 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public void annonce()
 	{
-		System.out.println("Prod");
+		System.out.println("Joueur");
 	}
 
 	public static void main(String args[])
 	{
-		ProducteurImpl prod = null ;
+		JoueurImpl joueur = null ;
 
 		if (args.length != 2)
 		{
@@ -47,10 +47,10 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl() ;
-			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
-			prod.producteur = ProducteurHelper.narrow(ref) ; 
-			if (prod == null)
+			joueur = new JoueurImpl() ;
+			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
+			joueur.player = JoueurHelper.narrow(ref) ; 
+			if (joueur == null)
 			{
 				System.out.println("Pb pour obtenir une ref sur le client") ;
 				System.exit(1) ;
@@ -61,8 +61,8 @@ public class ProducteurImpl extends ProducteurPOA
 			org.omg.CORBA.Object obj = orb.string_to_object(reference) ;
 
 			// obtenir reference sur l'objet distant
-			prod.cord = CoordinateurHelper.narrow(obj) ;
-			if (prod.producteur == null)
+			joueur.cord = CoordinateurHelper.narrow(obj) ;
+			if (joueur.player == null)
 			{
 				System.out.println("Pb pour contacter le serveur") ;
 				System.exit(1) ;
@@ -71,10 +71,10 @@ public class ProducteurImpl extends ProducteurPOA
 			//	System.out.println("Annonce du serveur : " + client.serveur.ping()) ;
 
 			// lancer l'ORB dans un thread
-			prod.thread = new ThreadRun(orb) ;
-			prod.thread.start() ;
-			prod.cord.ping();
-			prod.cord.ajoutProd(prod.producteur);
+			joueur.thread = new ThreadRun(orb) ;
+			joueur.thread.start() ;
+			joueur.cord.ping();
+			joueur.cord.ajoutJoueur(joueur.player);
 		//	prod.loop() ;
 		}
 		catch (Exception e)
@@ -86,7 +86,7 @@ public class ProducteurImpl extends ProducteurPOA
 		{
 			// shutdown
 			if (prod != null)
-			prod.thread.shutdown() ;
+			joueur.thread.shutdown() ;
 		}
 	}
 	
