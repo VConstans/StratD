@@ -16,23 +16,39 @@ public class CoordinateurImpl extends CoordinateurPOA
 	Vector<Joueur> list_joueur = new Vector<Joueur>();
 	Vector<Producteur> list_prod = new Vector<Producteur>();
 
+	int maxJoueur=5;
+	int maxProd=5;
+
 	public boolean ajoutJoueur(Joueur j)
 	{
-		list_joueur.addElement(j);
-		return true;	//TODO revoyer bonne valeur
+		if(list_joueur.size()<=maxJoueur)
+		{
+			list_joueur.addElement(j);
+			return true;	//TODO revoyer bonne valeur
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public boolean ajoutProd(Producteur p)
 	{
-		list_prod.addElement(p);
-		list_prod.get(0).annonce();
-		return true;	//TODO renvoyer bonne valeur
+		if(list_joueur.size()<=maxProd)
+		{
+			list_prod.addElement(p);
+			return true;	//TODO renvoyer bonne valeur
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 
 	public void ping()
 	{
-		System.out.println("Coonection");
+		System.out.println("Conection");
 	}
 
 	public static void main(String args[])
