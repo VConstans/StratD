@@ -1,16 +1,19 @@
 module StratD
 {
-	interface Joueur
-	{
-		boolean vole(in long n);
-	};
-
 
 	interface Producteur
 	{
 		boolean demandeRessource(in long n);
 		void annonce();
 	};
+
+
+	interface Joueur
+	{
+//		boolean vole(in long n);
+		void rcvListProd(in Producteur prod);
+	};
+
 
 
 	interface Coordinateur

@@ -13,17 +13,19 @@ import StratD.CoordinateurHelper;
 public class CoordinateurImpl extends CoordinateurPOA
 {
 
-	Vector<Joueur> list_joueur = new Vector<Joueur>();
-	Vector<Producteur> list_prod = new Vector<Producteur>();
+	ArrayList<Joueur> list_joueur = new ArrayList<Joueur>();
+	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
 
-	int maxJoueur=5;
-	int maxProd=5;
+
+	int maxJoueur=2;
+	int maxProd=2;
 
 	public boolean ajoutJoueur(Joueur j)
 	{
-		if(list_joueur.size()<=maxJoueur)
+		if(list_joueur.size()<maxJoueur)
 		{
-			list_joueur.addElement(j);
+			list_joueur.add(j);
+	//		sendList();
 			return true;
 		}
 		else
@@ -34,9 +36,10 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public boolean ajoutProd(Producteur p)
 	{
-		if(list_joueur.size()<=maxProd)
+		if(list_prod.size()<maxProd)
 		{
-			list_prod.addElement(p);
+			list_prod.add(p);
+	//		sendList();
 			return true;
 		}
 		else
@@ -45,10 +48,26 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
-
 	public void ping()
 	{
 		System.out.println("Conection");
+	}
+
+
+	private void sendList()
+	{
+		if(list_joueur.size()==maxJoueur && list_joueur.size() == maxProd)
+		{
+		int i,j;
+		for(i=0;i<list_joueur.size();i++)
+		{
+			for(j=0;j<list_prod.size();j++)
+			{
+				list_joueur.get(i).rcvListProd(list_prod.get(j));
+			
+			}
+		}
+		}
 	}
 
 	public static void main(String args[])
@@ -78,7 +97,15 @@ public class CoordinateurImpl extends CoordinateurPOA
 			ncRef.rebind(path, href) ;
 
 			System.out.println("Coordinateur ready and waiting ...") ;
-			orb.run() ;
+
+			ThreadRun thread=new ThreadRun(orb);
+			thread.start();
+
+			while(coord.list_joueur.size()<coord.maxJoueur && coord.list_joueur.size()<coord.maxProd);
+			System.out.println("après");
+			coord.sendList();
+
+//			coord.startGame();
 		}
 		catch (Exception e)
 		{

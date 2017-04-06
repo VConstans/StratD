@@ -73,8 +73,10 @@ public class ProducteurImpl extends ProducteurPOA
 			// lancer l'ORB dans un thread
 			prod.thread = new ThreadRun(orb) ;
 			prod.thread.start() ;
+		//	orb.run();
 			prod.cord.ping();
 			prod.cord.ajoutProd(prod.producteur);
+			prod.thread.join();
 		//	prod.loop() ;
 		}
 		catch (Exception e)

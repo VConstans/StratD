@@ -9,6 +9,7 @@ import StratD.CoordinateurHelper;
 import StratD.Joueur;
 import StratD.JoueurPOA;
 import StratD.JoueurHelper;
+import StratD.Producteur;
 
 
 public class JoueurImpl extends JoueurPOA
@@ -16,6 +17,8 @@ public class JoueurImpl extends JoueurPOA
 	Joueur player;
 	Coordinateur cord;
 	ThreadRun thread;
+
+	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
 
 
 	public boolean demandeRessource(int n)
@@ -26,6 +29,13 @@ public class JoueurImpl extends JoueurPOA
 	public void annonce()
 	{
 		System.out.println("Joueur");
+	}
+
+
+	public void rcvListProd(Producteur prod)
+	{
+		list_prod.add(prod);
+		System.out.println(list_prod.size());
 	}
 
 	public static void main(String args[])
@@ -75,6 +85,8 @@ public class JoueurImpl extends JoueurPOA
 			joueur.thread.start() ;
 			joueur.cord.ping();
 			joueur.cord.ajoutJoueur(joueur.player);
+
+			joueur.thread.join();
 		//	prod.loop() ;
 		}
 		catch (Exception e)
@@ -85,7 +97,7 @@ public class JoueurImpl extends JoueurPOA
 		finally
 		{
 			// shutdown
-			if (prod != null)
+			if (joueur != null)
 			joueur.thread.shutdown() ;
 		}
 	}
