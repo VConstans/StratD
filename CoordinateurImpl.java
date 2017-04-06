@@ -24,7 +24,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		if(list_joueur.size()<=maxJoueur)
 		{
 			list_joueur.addElement(j);
-			return true;	//TODO revoyer bonne valeur
+			return true;
 		}
 		else
 		{
@@ -37,7 +37,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		if(list_joueur.size()<=maxProd)
 		{
 			list_prod.addElement(p);
-			return true;	//TODO renvoyer bonne valeur
+			return true;
 		}
 		else
 		{
