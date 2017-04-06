@@ -10,6 +10,7 @@ import StratD.Joueur;
 import StratD.JoueurPOA;
 import StratD.JoueurHelper;
 import StratD.Producteur;
+import StratD.Ressource;
 
 
 public class JoueurImpl extends JoueurPOA
@@ -20,10 +21,12 @@ public class JoueurImpl extends JoueurPOA
 
 	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
 
+	int[] ressource=new int[5];
 
-	public boolean demandeRessource(int n)
+	private void demandeRessource(int i,int n)
 	{
-		return true;	//TODO renvoyer bonne valeur
+		Ressource r=list_prod.get(i).demandeRessource(n);
+		ressource[r.type]+=r.nb;
 	}
 
 	public void annonce()

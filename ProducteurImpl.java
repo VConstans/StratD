@@ -9,6 +9,7 @@ import StratD.CoordinateurHelper;
 import StratD.Producteur;
 import StratD.ProducteurPOA;
 import StratD.ProducteurHelper;
+import StratD.Ressource;
 
 
 public class ProducteurImpl extends ProducteurPOA
@@ -17,10 +18,29 @@ public class ProducteurImpl extends ProducteurPOA
 	Coordinateur cord;
 	ThreadRun thread;
 
+	int ressourceType;
+	int nbressource;
+	int produit;
 
-	public boolean demandeRessource(int n)
+	public ProducteurImpl(int type,int nb)
 	{
-		return true;	//TODO renvoyer bonne valeur
+		ressourceType=type;
+		nbressource=nb;
+		produit=0;
+	}
+
+
+	public Ressource demandeRessource(int n)
+	{
+		if(n<=produit)
+		{
+			produit-=n;
+			return new Ressource(ressourceType,n);
+		}
+		else
+		{
+			return new Ressource(ressourceType,0);
+		}
 	}
 
 	public void annonce()
@@ -47,7 +67,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl() ;
+			prod = new ProducteurImpl(1,10) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)

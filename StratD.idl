@@ -1,9 +1,16 @@
 module StratD
 {
 
+	struct Ressource
+	{
+		long type;
+		long nb;
+	};
+
+
 	interface Producteur
 	{
-		boolean demandeRessource(in long n);
+		Ressource demandeRessource(in long n);
 		void annonce();
 	};
 
