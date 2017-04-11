@@ -19,13 +19,13 @@ public class JoueurImpl extends JoueurPOA
 	Coordinateur cord;
 	ThreadRun thread;
 
-	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
+	Producteur[] list_prod;
 
 	int[] ressource=new int[5];
 
 	private void demandeRessource(int i,int n)
 	{
-		Ressource r=list_prod.get(i).demandeRessource(n);
+		Ressource r=list_prod[i].demandeRessource(n);
 		ressource[r.type]+=r.nb;
 	}
 
@@ -35,10 +35,10 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void rcvListProd(Producteur prod)
+	public void rcvListProd(Producteur[] prod)
 	{
-		list_prod.add(prod);
-		System.out.println(list_prod.size());
+		list_prod = prod;
+		System.out.println(list_prod.length);
 	}
 
 	public static void main(String args[])
@@ -57,6 +57,7 @@ public class JoueurImpl extends JoueurPOA
 
 			// Init POA
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")) ;
+
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
