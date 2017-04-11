@@ -73,7 +73,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(1,10) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(0,10) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)

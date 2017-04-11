@@ -58,17 +58,20 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void sendList()
 	{
-		if(list_joueur.size()==maxJoueur && list_joueur.size() == maxProd)
-		{
+//		if(list_joueur.size()==maxJoueur && list_joueur.size() == maxProd)
+//		{
 			Producteur[] tabProd =new Producteur[list_prod.size()];
 			tabProd = list_prod.toArray(tabProd);
 
 			int i,j;
+			
+			System.out.println("=============================>"+list_joueur.size());
 			for(i=0;i<list_joueur.size();i++)
 			{
+				System.out.println("=============+>boucle");
 				list_joueur.get(i).rcvListProd(tabProd);
 			}
-		}
+//		}
 	}
 
 
@@ -83,6 +86,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void preparationJeu()
 	{
+		System.out.println("===================================+>passe");
 		sendList();
 
 		lancementJeu();
@@ -132,7 +136,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			thread.join();
 
-//			coord.startGame();
 		}
 		catch (Exception e)
 		{

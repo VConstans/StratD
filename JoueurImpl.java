@@ -27,8 +27,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void demandeRessource(int p,int r,int n)
 	{
-		Ressource re = new Ressource(r,n);
-		if(list_prod[p].demandeRessource(re))
+		if(list_prod[p].demandeRessource(new Ressource(r,n)))
 		{
 			ressource[r]+=n;
 		}
@@ -52,14 +51,27 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void gameLoop()
+	private boolean verifRessource()
 	{
-		demandeRessource(0,1,5);
+		int i;
+		for(i=0;i<ressource.length;i++)
+		{
+			if(ressource[i] < besoin[i])
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
-	public void annonce()
+
+	public void gameLoop()
 	{
-		System.out.println("Joueur : "+id);
+		while(!verifRessource())
+		{	
+			demandeRessource(0,0,1);
+		}
 	}
 
 
@@ -90,6 +102,9 @@ public class JoueurImpl extends JoueurPOA
 
 			// creer l'objet qui sera appele' depuis le serveur
 			joueur = new JoueurImpl() ;
+
+			joueur.besoin[0]=7;
+
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 
 			if (joueur == null)
