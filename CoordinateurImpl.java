@@ -17,42 +17,42 @@ public class CoordinateurImpl extends CoordinateurPOA
 	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
 
 
-	int maxJoueur=2;
-	int maxProd=2;
+	int maxJoueur=3;
+	int maxProd=3;
 
-	public boolean ajoutJoueur(Joueur j)
+	synchronized public int ajoutJoueur(Joueur j)
 	{
 		if(list_joueur.size()<maxJoueur)
 		{
 			list_joueur.add(j);
-			System.out.println(list_joueur.size());
+			System.out.println("======+>"+list_joueur.size());
 	//		sendList();
-			return true;
+			return list_joueur.size();
 		}
 		else
 		{
-			return false;
+			return -1;
 		}
 	}
 
-	public boolean ajoutProd(Producteur p)
+	synchronized public int ajoutProd(Producteur p)
 	{
 		if(list_prod.size()<maxProd)
 		{
 			list_prod.add(p);
-			System.out.println(list_prod.size());
+//			System.out.println(list_prod.size());
 	//		sendList();
-			return true;
+			return list_prod.size();
 		}
 		else
 		{
-			return false;
+			return -1;
 		}
 	}
 
-	public void ping()
+	public void ping(int id)
 	{
-		System.out.println("Conection");
+		System.out.println("Conection "+id);
 	}
 
 

@@ -18,6 +18,7 @@ public class JoueurImpl extends JoueurPOA
 	Joueur player;
 	Coordinateur cord;
 	ThreadRun thread;
+	int id;
 
 	Producteur[] list_prod;
 
@@ -29,16 +30,29 @@ public class JoueurImpl extends JoueurPOA
 		ressource[r.type]+=r.nb;
 	}
 
+	private void connection()
+	{
+		id = cord.ajoutJoueur(player);
+		if(id != -1)
+		{
+			cord.ping(id);
+		}
+		else
+		{
+			System.out.println("Erreur connection "+id);
+		}
+	}
+
 	public void annonce()
 	{
-		System.out.println("Joueur");
+		System.out.println("Joueur : "+id);
 	}
 
 
 	public void rcvListProd(Producteur[] prod)
 	{
 		list_prod = prod;
-		System.out.println(list_prod.length);
+		System.out.println(id+" : "+list_prod.length);
 	}
 
 	public static void main(String args[])
@@ -87,8 +101,8 @@ public class JoueurImpl extends JoueurPOA
 			// lancer l'ORB dans un thread
 			joueur.thread = new ThreadRun(orb) ;
 			joueur.thread.start() ;
-			joueur.cord.ping();
-			joueur.cord.ajoutJoueur(joueur.player);
+
+			joueur.connection();
 
 			joueur.thread.join();
 		//	prod.loop() ;
