@@ -19,13 +19,13 @@ public class ProducteurImpl extends ProducteurPOA
 	ThreadRun thread;
 
 	int ressourceType;
-	int nbressource;
+	int nbRessource;
 	int produit;
 
 	public ProducteurImpl(int type,int nb)
 	{
 		ressourceType=type;
-		nbressource=nb;
+		nbRessource=nb;
 		produit=10;
 	}
 
@@ -42,6 +42,11 @@ public class ProducteurImpl extends ProducteurPOA
 		{
 			return false;
 		}
+	}
+
+	public Ressource sondeProd()
+	{
+		return new Ressource(ressourceType,nbRessource);
 	}
 
 	public void annonce()

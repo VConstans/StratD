@@ -23,6 +23,7 @@ public class JoueurImpl extends JoueurPOA
 	Producteur[] list_prod;
 
 	int[] ressource=new int[5];
+	int[] besoin=new int[5];
 
 	private void demandeRessource(int p,int r,int n)
 	{
