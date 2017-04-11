@@ -30,7 +30,7 @@ public class ProducteurImpl extends ProducteurPOA
 	}
 
 
-	public boolean demandeRessource(Ressource r)
+	synchronized public boolean demandeRessource(Ressource r)
 	{
 		if(r.type == ressourceType && r.nb <= produit)
 		{

@@ -71,6 +71,24 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
+
+	private void lancementJeu()
+	{
+		int i;
+		for(i=0;i<list_joueur.size();i++)
+		{
+			list_joueur.get(i).gameLoop();
+		}
+	}
+
+	private void preparationJeu()
+	{
+		sendList();
+
+		lancementJeu();
+	}
+
+
 	public static void main(String args[])
 	{
 		if (args.length != 2)
@@ -108,10 +126,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			System.out.println("après");
 			System.out.flush();
-			coord.sendList();
 
-
-			coord.list_joueur.get(0).gameLoop();
+			coord.preparationJeu();
 
 
 			thread.join();

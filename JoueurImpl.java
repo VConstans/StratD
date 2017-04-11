@@ -31,6 +31,10 @@ public class JoueurImpl extends JoueurPOA
 		{
 			ressource[r]+=n;
 		}
+		else
+		{
+			System.out.println("Demande impossible");
+		}
 	}
 
 	private void connection()
