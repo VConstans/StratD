@@ -1,2 +1,3 @@
 pkill java
+rm *.class
 rm StratD/*
