@@ -15,12 +15,14 @@ module StratD
 	};
 
 
+	typedef sequence<Producteur> tabProducteur;
+
+
 	interface Joueur
 	{
 //		boolean vole(in long n);
-		void rcvListProd(in Producteur prod);
+		void rcvListProd(in tabProducteur prod);
 	};
-
 
 
 	interface Coordinateur
