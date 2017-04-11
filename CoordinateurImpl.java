@@ -104,9 +104,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			Thread.sleep(10000);
 
+
+
 			System.out.println("après");
 			System.out.flush();
 			coord.sendList();
+
+
+			coord.list_joueur.get(0).gameLoop();
+
+
 			thread.join();
 
 //			coord.startGame();

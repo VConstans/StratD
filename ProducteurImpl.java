@@ -26,20 +26,21 @@ public class ProducteurImpl extends ProducteurPOA
 	{
 		ressourceType=type;
 		nbressource=nb;
-		produit=0;
+		produit=10;
 	}
 
 
-	public Ressource demandeRessource(int n)
+	public boolean demandeRessource(Ressource r)
 	{
-		if(n<=produit)
+		if(r.type == ressourceType && r.nb <= produit)
 		{
-			produit-=n;
-			return new Ressource(ressourceType,n);
+			produit-=r.nb;
+			System.out.println("ressource apres demande "+produit);
+			return true;
 		}
 		else
 		{
-			return new Ressource(ressourceType,0);
+			return false;
 		}
 	}
 

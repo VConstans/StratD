@@ -24,10 +24,13 @@ public class JoueurImpl extends JoueurPOA
 
 	int[] ressource=new int[5];
 
-	private void demandeRessource(int i,int n)
+	private void demandeRessource(int p,int r,int n)
 	{
-		Ressource r=list_prod[i].demandeRessource(n);
-		ressource[r.type]+=r.nb;
+		Ressource re = new Ressource(r,n);
+		if(list_prod[p].demandeRessource(re))
+		{
+			ressource[r]+=n;
+		}
 	}
 
 	private void connection()
@@ -41,6 +44,12 @@ public class JoueurImpl extends JoueurPOA
 		{
 			System.out.println("Erreur connection "+id);
 		}
+	}
+
+
+	public void gameLoop()
+	{
+		demandeRessource(0,1,5);
 	}
 
 	public void annonce()
