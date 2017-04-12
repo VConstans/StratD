@@ -33,7 +33,7 @@ public class JoueurImpl extends JoueurPOA
 		}
 		else
 		{
-			System.out.println("Demande impossible");
+//			System.out.println("Demande impossible");
 		}
 	}
 
