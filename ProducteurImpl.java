@@ -54,13 +54,18 @@ public class ProducteurImpl extends ProducteurPOA
 		System.out.println("Prod");
 	}
 
+	public void production(int n)
+	{
+		produit+=n;
+	}
+
 	public static void main(String args[])
 	{
 		ProducteurImpl prod = null ;
 
-		if (args.length != 2)
+		if (args.length != 4)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>") ;
+			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + "<num Ressource>" + "Nb de ressource") ;
 			return ;
 		}
 		try
@@ -73,7 +78,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(0,10) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(Integer.parseInt(args[2]),Integer.parseInt(args[3])) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)
