@@ -78,6 +78,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 	private void lancementJeu()
 	{
 		int i;
+
+		for(i=0;i<list_prod.size();i++)
+		{
+			list_prod.get(i).lancementProduction();
+		}
+
 		for(i=0;i<list_joueur.size();i++)
 		{
 			list_joueur.get(i).gameLoop();

@@ -18,6 +18,9 @@ public class ProducteurImpl extends ProducteurPOA
 	Coordinateur cord;
 	ThreadRun thread;
 
+	ProductTask pt;
+	Timer timer;
+
 	int ressourceType;
 	int nbRessource;
 	int produit;
@@ -27,6 +30,8 @@ public class ProducteurImpl extends ProducteurPOA
 		ressourceType=type;
 		nbRessource=nb;
 		produit=10;
+
+		pt=new ProductTask(this);
 	}
 
 
@@ -57,6 +62,13 @@ public class ProducteurImpl extends ProducteurPOA
 	public void production(int n)
 	{
 		produit+=n;
+		System.out.println("Produit apres production :"+produit);
+	}
+
+	public void lancementProduction()
+	{
+		timer=new Timer();
+		timer.scheduleAtFixedRate(pt,0,2*1000);
 	}
 
 	public static void main(String args[])

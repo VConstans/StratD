@@ -12,6 +12,7 @@ module StratD
 	{
 		boolean demandeRessource(in Ressource r);
 		void annonce();
+		oneway void lancementProduction();
 	};
 
 
