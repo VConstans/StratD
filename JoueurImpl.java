@@ -21,15 +21,26 @@ public class JoueurImpl extends JoueurPOA
 	int id;
 
 	Producteur[] list_prod;
+	Ressource[] connaissanceRessource;
 
 	int[] ressource=new int[5];
 	int[] besoin=new int[5];
 
-	private void demandeRessource(int p,int r,int n)
+
+	private void apprentissageRessource(int p, Ressource r)
 	{
-		if(list_prod[p].demandeRessource(new Ressource(r,n)))
+		if(connaissanceRessource[p] == null || connaissanceRessource[p].type != r.type)
 		{
-			ressource[r]+=n;
+			connaissanceRessource[p]=r;
+		}
+	}
+
+	private void demandeRessource(int p,Ressource r)
+	{
+		if(list_prod[p].demandeRessource(r)
+		{
+			ressource[r.type]+=r.nb;
+			apprentissageRessource(p,r)
 		}
 		else
 		{
@@ -66,20 +77,24 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
+	public void rcvListProd(Producteur[] prod)
+	{
+		list_prod = prod;
+		connaissanceRessource = new Ressource[list_prod.length]();
+		System.out.println(id+" : "+list_prod.length);
+	}
+
+
 	public void gameLoop()
 	{
 		while(!verifRessource())
 		{	
-			demandeRessource(0,0,1);
+			demandeRessource(0,new Ressource(0,1));
 		}
 	}
 
 
-	public void rcvListProd(Producteur[] prod)
-	{
-		list_prod = prod;
-		System.out.println(id+" : "+list_prod.length);
-	}
+
 
 	public static void main(String args[])
 	{
@@ -103,7 +118,7 @@ public class JoueurImpl extends JoueurPOA
 			// creer l'objet qui sera appele' depuis le serveur
 			joueur = new JoueurImpl() ;
 
-			joueur.besoin[0]=7;
+			joueur.besoin[0]=7;	//TODO Enlever
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 
