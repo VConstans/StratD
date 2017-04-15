@@ -11,6 +11,7 @@ module StratD
 	interface Producteur
 	{
 		boolean demandeRessource(in Ressource r);
+		Ressource sondeProd();
 		void annonce();
 		oneway void lancementProduction();
 	};
