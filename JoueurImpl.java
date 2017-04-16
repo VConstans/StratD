@@ -1,6 +1,7 @@
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
 import java.util.*;
+import java.util.concurrent.locks.*;
 import java.io.*;
 import java.io.IOException;
 import org.omg.CosNaming.*;
@@ -16,7 +17,7 @@ import StratD.Ressource;
 public class JoueurImpl extends JoueurPOA
 {
 	Joueur player;
-	Coordinateur cord;
+	Coordinateur coord;
 	ThreadRun thread;
 	int id;
 
@@ -25,6 +26,23 @@ public class JoueurImpl extends JoueurPOA
 
 	int[] ressource=new int[5];
 	int[] besoin=new int[5];
+
+	boolean RbR = true;	//TODO modifier
+
+	Lock tour = new ReentrantLock();
+
+
+	public JoueurImpl()
+	{
+		tour.lock();
+	}
+
+
+	public void joueTour()
+	{
+		tour.unlock();
+	}
+	
 
 
 	private void apprentissageRessource(int p, Ressource r)
@@ -37,10 +55,10 @@ public class JoueurImpl extends JoueurPOA
 
 	private void demandeRessource(int p,Ressource r)
 	{
-		if(list_prod[p].demandeRessource(r)
+		if(list_prod[p].demandeRessource(r))
 		{
 			ressource[r.type]+=r.nb;
-			apprentissageRessource(p,r)
+			apprentissageRessource(p,r);
 		}
 		else
 		{
@@ -50,10 +68,10 @@ public class JoueurImpl extends JoueurPOA
 
 	private void connection()
 	{
-		id = cord.ajoutJoueur(player);
+		id = coord.ajoutJoueur(player);
 		if(id != -1)
 		{
-			cord.ping(id);
+			coord.ping(id);
 		}
 		else
 		{
@@ -80,7 +98,7 @@ public class JoueurImpl extends JoueurPOA
 	public void rcvListProd(Producteur[] prod)
 	{
 		list_prod = prod;
-		connaissanceRessource = new Ressource[list_prod.length]();
+		connaissanceRessource = new Ressource[list_prod.length];
 		System.out.println(id+" : "+list_prod.length);
 	}
 
@@ -88,8 +106,16 @@ public class JoueurImpl extends JoueurPOA
 	public void gameLoop()
 	{
 		while(!verifRessource())
-		{	
+		{
+			if(RbR)
+			{
+				tour.lock();
+			}
 			demandeRessource(0,new Ressource(0,1));
+			if(RbR)
+			{
+				coord.finTour();
+			}
 		}
 	}
 
@@ -133,7 +159,7 @@ public class JoueurImpl extends JoueurPOA
 			org.omg.CORBA.Object obj = orb.string_to_object(reference) ;
 
 			// obtenir reference sur l'objet distant
-			joueur.cord = CoordinateurHelper.narrow(obj) ;
+			joueur.coord = CoordinateurHelper.narrow(obj) ;
 			if (joueur.player == null)
 			{
 				System.out.println("Pb pour contacter le serveur") ;

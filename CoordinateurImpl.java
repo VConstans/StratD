@@ -1,6 +1,7 @@
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
 import java.util.*;
+import java.util.concurrent.locks.*;
 import org.omg.CosNaming.*;
 import StratD.CoordinateurPOA;
 import StratD.Coordinateur;
@@ -19,6 +20,17 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	int maxJoueur=3;
 	int maxProd=3;
+
+
+	boolean RbR=true;
+
+	Lock tour = new ReentrantLock();
+
+
+	public CoordinateurImpl()
+	{
+		tour.lock();
+	}
 
 	synchronized public int ajoutJoueur(Joueur j)
 	{
@@ -56,6 +68,11 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
+	public void finTour()
+	{
+		tour.unlock();
+	}
+
 	private void sendList()
 	{
 //		if(list_joueur.size()==maxJoueur && list_joueur.size() == maxProd)
@@ -90,12 +107,28 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
+	private void boucleDeTour()
+	{
+		int indexTour=0;
+
+		while(true)
+		{
+			tour.lock();
+			list_joueur.get(indexTour).joueTour();
+		}
+	}
+
 	private void preparationJeu()
 	{
 		System.out.println("===================================+>passe");
 		sendList();
 
 		lancementJeu();
+
+		if(RbR)
+		{
+			boucleDeTour();
+		}
 	}
 
 

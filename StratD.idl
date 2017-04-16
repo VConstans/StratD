@@ -25,6 +25,7 @@ module StratD
 //		boolean vole(in long n);
 		void rcvListProd(in tabProducteur prod);
 		oneway void gameLoop();
+		void joueTour();
 	};
 
 
@@ -33,6 +34,7 @@ module StratD
 		long ajoutJoueur(in Joueur j);
 		long ajoutProd(in Producteur p);
 		void ping(in long id);
+		void finTour();
 	};
 
 };
