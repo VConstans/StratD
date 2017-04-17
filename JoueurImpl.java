@@ -53,8 +53,21 @@ public class JoueurImpl extends JoueurPOA
 			System.out.println("==========+++>erreur "+id);
 		}
 	}
-	
 
+
+	synchronized public boolean estVole(Ressource r)
+	{
+		if(r.nb <= ressource[r.type].nb)
+		{
+			ressource[r.type]-=r.nb;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 
 	private void apprentissageRessource(int p, Ressource r)
 	{
@@ -76,6 +89,21 @@ public class JoueurImpl extends JoueurPOA
 //			System.out.println("Demande impossible");
 		}
 	}
+
+
+	private void vole(int j,Ressource r)
+	{
+		if(list_joueur[j].demandeRessource(r))
+		{
+			ressource[r.type]+=r.nb;
+			apprentissageRessource(j,r);
+		}
+		else
+		{
+//			System.out.println("Demande impossible");
+		}
+	}
+
 
 	private void connection()
 	{
