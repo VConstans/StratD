@@ -22,16 +22,22 @@ public class CoordinateurImpl extends CoordinateurPOA
 	int maxProd=3;
 
 
-	boolean RbR=true;
+	boolean RbR=false;
 
 	Lock tour = new ReentrantLock();
 
 
-/*	public CoordinateurImpl()
+	public CoordinateurImpl(String s,int maxJ, int maxP)
 	{
-		tour.lock();
+//		tour.lock();
+		if(s.equals("R"))
+		{
+			RbR=true;
+		}
+		maxJoueur=maxJ;
+		maxProd=maxP;
 	}
-*/
+
 	synchronized public int ajoutJoueur(Joueur j, boolean modeDeJeu)
 	{
 		if(RbR != modeDeJeu)
@@ -158,16 +164,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public static void main(String args[])
 	{
-		if (args.length != 2)
+		if (args.length != 5)
 		{
-			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>") ;
+			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>" + " nb de joueur" + " nb de prod") ;
 			return ;
 		}
 		try
 		{
 			String [] argv = {"-ORBInitialHost", args[0], "-ORBInitialPort", args[1]} ; 
 			ORB orb = ORB.init(argv, null) ;
-			CoordinateurImpl coord = new CoordinateurImpl() ;
+			CoordinateurImpl coord = new CoordinateurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4])) ;
 
 			// init POA
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")) ;

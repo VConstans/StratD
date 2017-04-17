@@ -27,13 +27,18 @@ public class JoueurImpl extends JoueurPOA
 	int[] ressource=new int[5];
 	int[] besoin=new int[5];
 
-	boolean RbR = true;	//TODO modifier
+	boolean RbR = false;	//TODO modifier
 
 	Lock tour = new ReentrantLock();
 
 
-	public JoueurImpl()
+	public JoueurImpl(String[] args)
 	{
+		if(args[0].equals("R"))
+		{
+			RbR=true;
+		}
+
 		tour.lock();
 	}
 
@@ -138,9 +143,9 @@ public class JoueurImpl extends JoueurPOA
 	{
 		JoueurImpl joueur = null ;
 
-		if (args.length != 2)
+		if (args.length != 3)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>") ;
+			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>") ;
 			return ;
 		}
 		try
@@ -154,7 +159,7 @@ public class JoueurImpl extends JoueurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			joueur = new JoueurImpl() ;
+			joueur = new JoueurImpl(args) ;
 
 			joueur.besoin[0]=7;	//TODO Enlever
 
