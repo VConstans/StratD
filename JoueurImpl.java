@@ -22,10 +22,13 @@ public class JoueurImpl extends JoueurPOA
 	int id;
 
 	Producteur[] list_prod;
+	Joueur[] list_joueur;
+
 	Ressource[] connaissanceRessource;
 
 	int[] ressource=new int[5];
 	int[] besoin=new int[5];
+
 
 	boolean RbR = false;	//TODO modifier
 
@@ -67,7 +70,40 @@ public class JoueurImpl extends JoueurPOA
 			return false;
 		}
 	}
-	
+
+
+
+	public void rcvListProd(Producteur[] prod)
+	{
+		list_prod = prod;
+		connaissanceRessource = new Ressource[list_prod.length];
+		System.out.println(id+" : "+list_prod.length);
+	}
+
+
+	public void rcvListJoueur(Joueur[] joueur)
+	{
+		list_joueur = joueur;
+	}
+
+
+
+	public void gameLoop()
+	{
+		while(!verifRessource())
+		{
+			if(RbR)
+			{
+				tour.lock();
+			}
+			demandeRessource(0,new Ressource(0,1));
+			if(RbR)
+			{
+			//	coord.finTour();
+			}
+		}
+	}
+
 
 	private void apprentissageRessource(int p, Ressource r)
 	{
@@ -139,30 +175,6 @@ public class JoueurImpl extends JoueurPOA
 		return true;
 	}
 
-
-	public void rcvListProd(Producteur[] prod)
-	{
-		list_prod = prod;
-		connaissanceRessource = new Ressource[list_prod.length];
-		System.out.println(id+" : "+list_prod.length);
-	}
-
-
-	public void gameLoop()
-	{
-		while(!verifRessource())
-		{
-			if(RbR)
-			{
-				tour.lock();
-			}
-			demandeRessource(0,new Ressource(0,1));
-			if(RbR)
-			{
-			//	coord.finTour();
-			}
-		}
-	}
 
 
 

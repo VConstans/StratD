@@ -22,8 +22,11 @@ module StratD
 
 	interface Joueur
 	{
+		typedef sequence<Joueur> tabJoueur;
+
 //		boolean vole(in long n);
 		void rcvListProd(in tabProducteur prod);
+		void rcvListJoueur(in tabJoueur joueur);
 		oneway void gameLoop();
 		void joueTour();
 	};

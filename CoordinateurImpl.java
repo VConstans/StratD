@@ -97,11 +97,15 @@ public class CoordinateurImpl extends CoordinateurPOA
 			Producteur[] tabProd =new Producteur[list_prod.size()];
 			tabProd = list_prod.toArray(tabProd);
 
-			int i,j;
+			Joueur[] tabJoueur = new Joueur[list_joueur.size()];
+			tabJoueur = list_joueur.toArray(tabJoueur);
+
+			int i;
 			
 			for(i=0;i<list_joueur.size();i++)
 			{
 				list_joueur.get(i).rcvListProd(tabProd);
+				list_joueur.get(i).rcvListJoueur(tabJoueur);
 			}
 //		}
 	}
