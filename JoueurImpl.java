@@ -23,6 +23,7 @@ public class JoueurImpl extends JoueurPOA
 
 	Producteur[] list_prod;
 	Joueur[] list_joueur;
+	ArrayList<Joueur> observateur;
 
 	Ressource[] connaissanceRessource;
 
@@ -60,7 +61,7 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized public boolean estVole(Ressource r)
 	{
-		if(r.nb <= ressource[r.type].nb)
+		if(r.nb <= ressource[r.type])
 		{
 			ressource[r.type]-=r.nb;
 			return true;
@@ -87,6 +88,25 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
+	public void ajoutObservateur(Joueur j)
+	{
+		observateur.add(j);
+	}
+
+	public void suppObservateur(Joueur j)
+	{
+		if(!observateur.remove(j))
+		{
+			System.out.println("Erreur suppression observateur");
+		}
+	}
+
+
+	public void observeVole()
+	{
+		System.out.println("Vole observé");
+	}
+
 
 	public void gameLoop()
 	{
@@ -101,6 +121,28 @@ public class JoueurImpl extends JoueurPOA
 			{
 			//	coord.finTour();
 			}
+		}
+	}
+
+
+	private void commenceObservation()
+	{
+		int i;
+
+		for(i=0;i<list_joueur.length;i++)
+		{
+			list_joueur[i].ajoutObservateur(player);
+		}
+	}
+
+
+	private void finObservation()
+	{
+		int i;
+
+		for(i=0;i<list_joueur.length;i++)
+		{
+			list_joueur[i].suppObservateur(player);
 		}
 	}
 
@@ -129,7 +171,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void vole(int j,Ressource r)
 	{
-		if(list_joueur[j].demandeRessource(r))
+		if(list_joueur[j].estVole(r))
 		{
 			ressource[r.type]+=r.nb;
 			apprentissageRessource(j,r);

@@ -24,11 +24,14 @@ module StratD
 	{
 		typedef sequence<Joueur> tabJoueur;
 
-//		boolean vole(in long n);
 		void rcvListProd(in tabProducteur prod);
 		void rcvListJoueur(in tabJoueur joueur);
+		void ajoutObservateur(in Joueur j);
+		void suppObservateur(in Joueur j);
+		void observeVole();
 		oneway void gameLoop();
 		void joueTour();
+		boolean estVole(in Ressource r);
 	};
 
 
