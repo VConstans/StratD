@@ -40,7 +40,13 @@ public class JoueurImpl extends JoueurPOA
 
 	public void joueTour()
 	{
+		try
+		{
 		tour.unlock();
+		} catch (Exception e)
+		{
+			System.out.println("==========+++>erreur "+id);
+		}
 	}
 	
 
@@ -68,14 +74,20 @@ public class JoueurImpl extends JoueurPOA
 
 	private void connection()
 	{
-		id = coord.ajoutJoueur(player);
-		if(id != -1)
+		id = coord.ajoutJoueur(player, RbR);
+
+		switch(id)
 		{
-			coord.ping(id);
-		}
-		else
-		{
-			System.out.println("Erreur connection "+id);
+			case -1:
+				System.out.println("Plus de place disponible "+id);
+				break;
+			case -2:
+				System.out.println("Mode de jeu incompatible "+id);
+				break;
+			default:
+				coord.ping(id);
+				break;
+
 		}
 	}
 
@@ -114,7 +126,7 @@ public class JoueurImpl extends JoueurPOA
 			demandeRessource(0,new Ressource(0,1));
 			if(RbR)
 			{
-				coord.finTour();
+			//	coord.finTour();
 			}
 		}
 	}

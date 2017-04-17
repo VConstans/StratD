@@ -27,17 +27,22 @@ public class CoordinateurImpl extends CoordinateurPOA
 	Lock tour = new ReentrantLock();
 
 
-	public CoordinateurImpl()
+/*	public CoordinateurImpl()
 	{
 		tour.lock();
 	}
-
-	synchronized public int ajoutJoueur(Joueur j)
+*/
+	synchronized public int ajoutJoueur(Joueur j, boolean modeDeJeu)
 	{
+		if(RbR != modeDeJeu)
+		{
+			return -2;
+		}
+
 		if(list_joueur.size()<maxJoueur)
 		{
 			list_joueur.add(j);
-			System.out.println("======+>"+list_joueur.size());
+			System.out.println("======+> ajout joueur"+list_joueur.size());
 	//		sendList();
 			return list_joueur.size();
 		}
@@ -64,13 +69,19 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public void ping(int id)
 	{
-		System.out.println("Conection "+id);
+		System.out.println(id+" connecté");
 	}
 
 
 	public void finTour()
 	{
+		try{
 		tour.unlock();
+		System.out.println("Unlock");
+		} catch(Exception e)
+		{
+			System.out.println("erreur unlock");
+		}
 	}
 
 	private void sendList()
@@ -82,10 +93,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			int i,j;
 			
-			System.out.println("=============================>"+list_joueur.size());
 			for(i=0;i<list_joueur.size();i++)
 			{
-				System.out.println("=============+>boucle");
 				list_joueur.get(i).rcvListProd(tabProd);
 			}
 //		}
@@ -109,18 +118,33 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void boucleDeTour()
 	{
+		if(list_joueur.size() == 0)
+		{
+			return;
+		}
+
 		int indexTour=0;
 
-		while(true)
+//		while(true)
+		int i;
+		for(i=0;i<2;i++)
 		{
+			try{
 			tour.lock();
+			} catch (Exception e)
+			{
+				System.out.println("Erreur lock");
+			}
+
+		System.out.println("===================================+>passe");
 			list_joueur.get(indexTour).joueTour();
+			indexTour=(indexTour+1)%list_joueur.size();
 		}
 	}
 
 	private void preparationJeu()
 	{
-		System.out.println("===================================+>passe");
+
 		sendList();
 
 		lancementJeu();

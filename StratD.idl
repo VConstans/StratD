@@ -31,7 +31,7 @@ module StratD
 
 	interface Coordinateur
 	{
-		long ajoutJoueur(in Joueur j);
+		long ajoutJoueur(in Joueur j, in boolean RbR);
 		long ajoutProd(in Producteur p);
 		void ping(in long id);
 		void finTour();

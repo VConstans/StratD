@@ -117,7 +117,7 @@ public class ProducteurImpl extends ProducteurPOA
 			prod.thread = new ThreadRun(orb) ;
 			prod.thread.start() ;
 		//	orb.run();
-			prod.cord.ping(1000);
+	//		prod.cord.ping(1000);
 			prod.cord.ajoutProd(prod.producteur);
 			prod.thread.join();
 		//	prod.loop() ;
