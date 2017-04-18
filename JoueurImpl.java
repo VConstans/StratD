@@ -12,6 +12,7 @@ import StratD.JoueurPOA;
 import StratD.JoueurHelper;
 import StratD.Producteur;
 import StratD.Ressource;
+import StratD.Transaction;
 
 
 public class JoueurImpl extends JoueurPOA
@@ -24,6 +25,7 @@ public class JoueurImpl extends JoueurPOA
 	Producteur[] list_prod;
 	Joueur[] list_joueur;
 	ArrayList<Joueur> observateur = new ArrayList<Joueur>();
+	ArrayList<Transaction> listTransaction = new ArrayList<Transaction>();
 
 	Ressource[] connaissanceRessource;
 
@@ -102,9 +104,36 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void observeVole(int i)
+	public void observeVole(int idTransaction,int idVoleur)
 	{
-		System.out.println("Vole commis par "+i+" observé par "+id);
+		System.out.println("Vole commis par "+idVoleur+" observé par "+id);
+		list_joueur[idVoleur-1].penaliseVole(idTransaction);
+	}
+
+
+	synchronized public void rendRessource(Ressource r)
+	{
+		ressource[r.type]+=r.nb;
+	}
+
+
+	synchronized public void penaliseVole(int idTransaction)
+	{
+		Transaction t = listTransaction.get(idTransaction);
+
+		if(t.vole == true && t.penalise == false)
+		{
+			System.out.println("Penalisation");
+			System.out.println("(Voleur) Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
+			ressource[t.ressource.type]-=t.ressource.nb;
+			System.out.println("(Voleur) Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
+			rendRessource(t.ressource);
+			t.penalise = true;
+		}
+		else
+		{
+			System.out.println("Penalisation deja faite ou pas un vole");
+		}
 	}
 
 
@@ -112,7 +141,8 @@ public class JoueurImpl extends JoueurPOA
 	{
 
 		commenceObservation();
-		while(!verifRessource())
+		int i=0;
+		while(/*!verifRessource()*/i<5)
 		{
 			if(RbR)
 			{
@@ -127,6 +157,8 @@ public class JoueurImpl extends JoueurPOA
 			}
 		}
 		finObservation();
+
+		i+=1;
 	}
 
 
@@ -176,13 +208,14 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void annonceVole()
+	private void annonceVole(int idTransaction)
 	{
 		int i;
 
 		for(i=0;i<observateur.size();i++)
 		{
-			observateur.get(i).observeVole(id);
+			if(i!=id-1)
+				observateur.get(i).observeVole(idTransaction,id);
 		}
 	}
 
@@ -195,7 +228,8 @@ public class JoueurImpl extends JoueurPOA
 			System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 			ressource[r.type]+=r.nb;
 			System.out.println(id+") ressource après vole "+ressource[r.type]);
-			annonceVole();
+			listTransaction.add(new Transaction(id,j,r,true,false));
+			annonceVole(listTransaction.size()-1);
 		}
 		else
 		{

@@ -8,6 +8,16 @@ module StratD
 	};
 
 
+	struct Transaction
+	{
+		long emetteur;
+		long recepteur;
+		Ressource ressource;
+		boolean vole;
+		boolean penalise;
+	};
+
+
 	interface Producteur
 	{
 		boolean demandeRessource(in Ressource r);
@@ -28,7 +38,9 @@ module StratD
 		void rcvListJoueur(in tabJoueur joueur);
 		void ajoutObservateur(in Joueur j);
 		void suppObservateur(in Joueur j);
-		void observeVole(in long i);
+		oneway void observeVole(in long idTransaction, in long idVoleur);
+		void rendRessource(in Ressource r);
+		void penaliseVole(in long idTransaction);
 		oneway void gameLoop();
 		void joueTour();
 		boolean estVole(in Ressource r);
