@@ -18,8 +18,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
 
 
-	int maxJoueur=3;
-	int maxProd=3;
+	int maxJoueur;
+	int maxProd;
 
 
 	boolean RbR=false;

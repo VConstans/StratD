@@ -23,7 +23,7 @@ public class JoueurImpl extends JoueurPOA
 
 	Producteur[] list_prod;
 	Joueur[] list_joueur;
-	ArrayList<Joueur> observateur;
+	ArrayList<Joueur> observateur = new ArrayList<Joueur>();
 
 	Ressource[] connaissanceRessource;
 
@@ -102,26 +102,31 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void observeVole()
+	public void observeVole(int i)
 	{
-		System.out.println("Vole observé");
+		System.out.println("Vole commis par "+i+" observé par "+id);
 	}
 
 
 	public void gameLoop()
 	{
+
+		commenceObservation();
 		while(!verifRessource())
 		{
 			if(RbR)
 			{
 				tour.lock();
 			}
-			demandeRessource(0,new Ressource(0,1));
+			//demandeRessource(0,new Ressource(0,1));
+			if(id!=1)
+				vole(0,new Ressource(0,1));
 			if(RbR)
 			{
 			//	coord.finTour();
 			}
 		}
+		finObservation();
 	}
 
 
@@ -155,11 +160,13 @@ public class JoueurImpl extends JoueurPOA
 		}
 	}
 
-	private void demandeRessource(int p,Ressource r)
+	synchronized private void demandeRessource(int p,Ressource r)
 	{
 		if(list_prod[p].demandeRessource(r))
 		{
+			System.out.println(id+") ressource avant demande "+ressource[r.type]);
 			ressource[r.type]+=r.nb;
+			System.out.println(id+") ressource après demande "+ressource[r.type]);
 			apprentissageRessource(p,r);
 		}
 		else
@@ -169,12 +176,26 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void vole(int j,Ressource r)
+	private void annonceVole()
 	{
+		int i;
+
+		for(i=0;i<observateur.size();i++)
+		{
+			observateur.get(i).observeVole(id);
+		}
+	}
+
+
+	synchronized private void vole(int j,Ressource r)
+	{
+
 		if(list_joueur[j].estVole(r))
 		{
+			System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 			ressource[r.type]+=r.nb;
-			apprentissageRessource(j,r);
+			System.out.println(id+") ressource après vole "+ressource[r.type]);
+			annonceVole();
 		}
 		else
 		{
@@ -244,6 +265,7 @@ public class JoueurImpl extends JoueurPOA
 			joueur = new JoueurImpl(args) ;
 
 			joueur.besoin[0]=7;	//TODO Enlever
+			joueur.ressource[0]=5;	//TODO Enlever
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 
