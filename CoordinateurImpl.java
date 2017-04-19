@@ -24,12 +24,13 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	boolean RbR=false;
 
-	Lock tour = new ReentrantLock();
+	Lock lock = new ReentrantLock();
+	Condition demarrage = lock.newCondition();
 
 
 	public CoordinateurImpl(String s,int maxJ, int maxP)
 	{
-//		tour.lock();
+//		lock.lock();
 		if(s.equals("R"))
 		{
 			RbR=true;
@@ -37,6 +38,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		maxJoueur=maxJ;
 		maxProd=maxP;
 	}
+
 
 	synchronized public int ajoutJoueur(Joueur j, boolean modeDeJeu)
 	{
@@ -50,6 +52,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 			list_joueur.add(j);
 			System.out.println("======+> ajout joueur"+list_joueur.size());
 	//		sendList();
+			verificationCommencement();
 			return list_joueur.size();
 		}
 		else
@@ -65,6 +68,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 			list_prod.add(p);
 //			System.out.println(list_prod.size());
 	//		sendList();
+			verificationCommencement();
 			return list_prod.size();
 		}
 		else
@@ -82,13 +86,28 @@ public class CoordinateurImpl extends CoordinateurPOA
 	public void finTour()
 	{
 		try{
-		tour.unlock();
+		lock.unlock();
 		System.out.println("Unlock");
 		} catch(Exception e)
 		{
 			System.out.println("erreur unlock");
 		}
 	}
+
+
+	private void verificationCommencement()
+	{
+		if(list_joueur.size() == maxJoueur && list_prod.size() == maxProd)
+		{
+			lock.lock();
+			try{
+			demarrage.signal();
+			} finally {
+			lock.unlock();
+			}
+		}
+	}
+
 
 	private void sendList()
 	{
@@ -140,7 +159,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		for(i=0;i<2;i++)
 		{
 			try{
-			tour.lock();
+			lock.lock();
 			} catch (Exception e)
 			{
 				System.out.println("Erreur lock");
@@ -197,9 +216,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 			ThreadRun thread=new ThreadRun(orb);
 			thread.start();
 
-			Thread.sleep(10000);
-
-
+			coord.lock.lock();
+			try{
+			coord.demarrage.await();
+			} finally {
+			coord.lock.unlock();
+			}
 
 			System.out.println("après");
 			System.out.flush();
