@@ -106,6 +106,7 @@ public class JoueurImpl extends JoueurPOA
 
 	public void observeVole(int idTransaction,int idVoleur)
 	{
+		//TODO if observe
 		System.out.println("Vole commis par "+idVoleur+" observé par "+id);
 		list_joueur[idVoleur-1].penaliseVole(idTransaction);
 	}
@@ -124,10 +125,10 @@ public class JoueurImpl extends JoueurPOA
 		if(t.vole == true && t.penalise == false)
 		{
 			System.out.println("Penalisation");
-			System.out.println("(Voleur) Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
+			System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
 			ressource[t.ressource.type]-=t.ressource.nb;
-			System.out.println("(Voleur) Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
-			rendRessource(t.ressource);
+			System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
+			list_joueur[t.recepteur].rendRessource(t.ressource);
 			t.penalise = true;
 		}
 		else
@@ -149,16 +150,28 @@ public class JoueurImpl extends JoueurPOA
 				tour.lock();
 			}
 			//demandeRessource(0,new Ressource(0,1));
-			if(id!=1)
+			if(id==1)
+			{
+				System.out.println(id+"======================>VOLE");
 				vole(0,new Ressource(0,1));
+			}
+			if(id==0)
+			{
+				try{
+				Thread.sleep(5000);
+				} catch (Exception e)
+				{
+					System.out.println("Erreur timer");
+				}
+			}
 			if(RbR)
 			{
 			//	coord.finTour();
 			}
+		i+=1;
 		}
 		finObservation();
 
-		i+=1;
 	}
 
 
@@ -214,7 +227,6 @@ public class JoueurImpl extends JoueurPOA
 
 		for(i=0;i<observateur.size();i++)
 		{
-			if(i!=id-1)
 				observateur.get(i).observeVole(idTransaction,id);
 		}
 	}
