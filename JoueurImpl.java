@@ -92,11 +92,14 @@ public class JoueurImpl extends JoueurPOA
 
 	public void ajoutObservateur(Joueur j)
 	{
+		
+		System.out.println(id+") ajoute obs");
 		observateur.add(j);
 	}
 
 	public void suppObservateur(Joueur j)
 	{
+		System.out.println(id+") supp obs");
 		if(!observateur.remove(j))
 		{
 			System.out.println("Erreur suppression observateur");
@@ -140,6 +143,7 @@ public class JoueurImpl extends JoueurPOA
 
 	public void gameLoop()
 	{
+		System.out.println("Game loop");
 
 		commenceObservation();
 		int i=0;
@@ -149,20 +153,14 @@ public class JoueurImpl extends JoueurPOA
 			{
 				tour.lock();
 			}
-			//demandeRessource(0,new Ressource(0,1));
 			if(id==1)
 			{
 				System.out.println(id+"======================>VOLE");
 				vole(0,new Ressource(0,1));
 			}
-			if(id==0)
+			else
 			{
-				try{
-				Thread.sleep(5000);
-				} catch (Exception e)
-				{
-					System.out.println("Erreur timer");
-				}
+				demandeRessource(0,new Ressource(0,1));
 			}
 			if(RbR)
 			{
@@ -177,6 +175,8 @@ public class JoueurImpl extends JoueurPOA
 
 	private void commenceObservation()
 	{
+		
+		System.out.println(id+") observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
@@ -188,6 +188,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void finObservation()
 	{
+		System.out.println(id+") arrete observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
