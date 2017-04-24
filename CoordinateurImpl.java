@@ -91,7 +91,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public void finTour()// throws InterruptedException
 	{
-		System.out.println(" fintour");
 		try
 		{
 		tour.lock();
@@ -112,13 +111,11 @@ public class CoordinateurImpl extends CoordinateurPOA
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
 
-		System.out.println("fini");
 	}
 
 
 	private void commenceTour()// throws InterruptedException
 	{
-		System.out.println(" commencetour");
 		try
 		{
 		tour.lock();
@@ -137,7 +134,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 		}catch(InterruptedException e)
 		{ System.out.println("InterruptedException");}
-		System.out.println("commence");
 	}
 
 

@@ -45,7 +45,7 @@ public class JoueurImpl extends JoueurPOA
 
 	public JoueurImpl(String args)
 	{
-		System.out.println(args);
+		//System.out.println(args);
 		if(args.equals("R"))
 		{
 			RbR=true;
@@ -56,7 +56,6 @@ public class JoueurImpl extends JoueurPOA
 
 	public void donneTour()// throws InterruptedException
 	{
-		System.out.println(id+") donnetour");
 		try
 		{
 		tour.lock();
@@ -76,7 +75,6 @@ public class JoueurImpl extends JoueurPOA
 		}
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
-		System.out.println("fini");
 	}
 
 
@@ -99,7 +97,7 @@ public class JoueurImpl extends JoueurPOA
 	{
 		list_prod = prod;
 		connaissanceRessource = new Ressource[list_prod.length];
-		System.out.println(id+" : "+list_prod.length);
+		//System.out.println(id+" : "+list_prod.length);
 	}
 
 
@@ -112,16 +110,16 @@ public class JoueurImpl extends JoueurPOA
 	public void ajoutObservateur(Joueur j)
 	{
 		
-		System.out.println(id+") ajoute obs");
+		//System.out.println(id+") ajoute obs");
 		observateur.add(j);
 	}
 
 	public void suppObservateur(Joueur j)
 	{
-		System.out.println(id+") supp obs");
+		//System.out.println(id+") supp obs");
 		if(!observateur.remove(j))
 		{
-			System.out.println("Erreur suppression observateur");
+			//System.out.println("Erreur suppression observateur");
 		}
 	}
 
@@ -146,10 +144,10 @@ public class JoueurImpl extends JoueurPOA
 
 		if(t.vole == true && t.penalise == false)
 		{
-			System.out.println("Penalisation");
-			System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
+			//System.out.println("Penalisation");
+			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
 			ressource[t.ressource.type]-=t.ressource.nb;
-			System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
+			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
 			list_joueur[t.recepteur].rendRessource(t.ressource);
 			t.penalise = true;
 		}
@@ -162,25 +160,25 @@ public class JoueurImpl extends JoueurPOA
 
 	public void gameLoop()
 	{
-		System.out.println("Game loop");
+		//System.out.println("Game loop");
 
 		commenceObservation();
 		int i=0;
-		while(/*!verifRessource()*/i<1)
+		while(/*!verifRessource()*/i<3)
 		{
 			if(RbR)
 			{
 				prendTour();
 			}
-			if(id==1)
-			{
-				System.out.println(id+"======================>VOLE");
+			/*if(id==1)
+			{*/
+				//System.out.println(id+"======================>VOLE");
 				vole(0,new Ressource(0,1));
-			}
+			/*}
 			else
 			{
 				demandeRessource(0,new Ressource(0,1));
-			}
+			}*/
 			if(RbR)
 			{
 				coord.finTour();
@@ -193,7 +191,6 @@ public class JoueurImpl extends JoueurPOA
 
 	private void prendTour()// throws InterruptedException
 	{
-		System.out.println(id+") prendtour");
 		try
 		{
 		tour.lock();
@@ -213,18 +210,18 @@ public class JoueurImpl extends JoueurPOA
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
 
-		System.out.println("commence");
 	}
 
 
 	private void commenceObservation()
 	{
 		
-		System.out.println(id+") observe");
+		//System.out.println(id+") observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
 		{
+			if(id != i+1)
 			list_joueur[i].ajoutObservateur(player);
 		}
 	}
@@ -232,7 +229,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void finObservation()
 	{
-		System.out.println(id+") arrete observe");
+		//System.out.println(id+") arrete observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
@@ -254,9 +251,9 @@ public class JoueurImpl extends JoueurPOA
 	{
 		if(list_prod[p].demandeRessource(r))
 		{
-			System.out.println(id+") ressource avant demande "+ressource[r.type]);
+			//System.out.println(id+") ressource avant demande "+ressource[r.type]);
 			ressource[r.type]+=r.nb;
-			System.out.println(id+") ressource après demande "+ressource[r.type]);
+			//System.out.println(id+") ressource après demande "+ressource[r.type]);
 			apprentissageRessource(p,r);
 		}
 		else
@@ -282,9 +279,9 @@ public class JoueurImpl extends JoueurPOA
 
 		if(list_joueur[j].estVole(r))
 		{
-			System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
+			//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 			ressource[r.type]+=r.nb;
-			System.out.println(id+") ressource après vole "+ressource[r.type]);
+			//System.out.println(id+") ressource après vole "+ressource[r.type]);
 			listTransaction.add(new Transaction(id,j,r,true,false));
 			annonceVole(listTransaction.size()-1);
 		}
