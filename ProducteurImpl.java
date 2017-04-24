@@ -44,7 +44,7 @@ public class ProducteurImpl extends ProducteurPOA
 		}
 		ressourceType=type;
 		nbRessource=nb;
-		produit=10;
+		produit=0;
 
 		pt=new ProductTask(this);
 	}
@@ -124,7 +124,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public void production()
 	{
-		produit+=1;
+		produit+=(nbRessource/2)+1;
 		System.out.println("Produit apres production :"+produit);
 	}
 
