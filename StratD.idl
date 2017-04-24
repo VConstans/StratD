@@ -24,6 +24,7 @@ module StratD
 		Ressource sondeProd();
 		void annonce();
 		oneway void lancementProduction();
+		void donneTour();
 	};
 
 
@@ -50,7 +51,7 @@ module StratD
 	interface Coordinateur
 	{
 		long ajoutJoueur(in Joueur j, in boolean RbR);
-		long ajoutProd(in Producteur p);
+		long ajoutProd(in Producteur p,in boolean RbR);
 		void ping(in long id);
 		void finTour();
 	};

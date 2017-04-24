@@ -3,6 +3,7 @@ import org.omg.PortableServer.*;
 import java.util.*;
 import java.io.*;
 import java.io.IOException;
+import java.util.concurrent.locks.*;
 import org.omg.CosNaming.*;
 import StratD.Coordinateur;
 import StratD.CoordinateurHelper;
@@ -15,24 +16,86 @@ import StratD.Ressource;
 public class ProducteurImpl extends ProducteurPOA
 {
 	Producteur producteur;
-	Coordinateur cord;
+	Coordinateur coord;
 	ThreadRun thread;
 
 	ProductTask pt;
 	Timer timer;
 
+	int id;
 	int ressourceType;
 	int nbRessource;
 	int produit;
 
-	public ProducteurImpl(int type,int nb)
+	boolean RbR = false;
+
+
+	Lock tour = new ReentrantLock();
+	Condition entrerTour = tour.newCondition();
+	Condition finTour = tour.newCondition();
+
+	boolean mon_tour = true;
+
+	public ProducteurImpl(String mode,int type,int nb)
 	{
+		if(mode.equals("R"))
+		{
+			RbR=true;
+		}
 		ressourceType=type;
 		nbRessource=nb;
 		produit=10;
 
 		pt=new ProductTask(this);
 	}
+
+
+	public void donneTour()// throws InterruptedException
+	{
+		try
+		{
+		tour.lock();
+
+		try
+		{
+			while(!mon_tour)
+			{
+				finTour.await();
+			}
+			mon_tour = false;
+			entrerTour.signal();
+		}
+		finally
+		{
+			tour.unlock();
+		}
+		} catch (InterruptedException e)
+		{ System.out.println("InterruptedException");}
+	}
+
+	private void prendTour()// throws InterruptedException
+	{
+		try
+		{
+		tour.lock();
+		try
+		{
+			while(mon_tour)
+			{
+				entrerTour.await();
+			}
+			mon_tour = true;
+			finTour.signal();
+		}
+		finally
+		{
+			tour.unlock();
+		}
+		} catch (InterruptedException e)
+		{ System.out.println("InterruptedException");}
+
+	}
+
 
 
 	synchronized public boolean demandeRessource(Ressource r)
@@ -59,25 +122,63 @@ public class ProducteurImpl extends ProducteurPOA
 		System.out.println("Prod");
 	}
 
-	public void production(int n)
+	public void production()
 	{
-		produit+=n;
+		produit+=1;
 		System.out.println("Produit apres production :"+produit);
 	}
 
 	public void lancementProduction()
 	{
-		timer=new Timer();
-		timer.scheduleAtFixedRate(pt,0,2*1000);
+		System.out.println("prod");
+		if(RbR)
+		{
+		System.out.println("R");
+			while(true)
+			{
+				prendTour();
+				System.out.println(id);
+				production();
+				coord.finTour();
+			}
+		}
+		else
+		{
+		System.out.println("L");
+			timer=new Timer();
+			timer.scheduleAtFixedRate(pt,0,2*1000);
+		}
 	}
+
+
+	private void connection()
+	{
+		id = coord.ajoutProd(producteur, RbR);
+
+		switch(id)
+		{
+			case -1:
+				System.out.println("Plus de place disponible "+id);
+				break;
+			case -2:
+				System.out.println("Mode de jeu incompatible "+id);
+				break;
+			default:
+				coord.ping(id);
+				break;
+
+		}
+	}
+
+
 
 	public static void main(String args[])
 	{
 		ProducteurImpl prod = null ;
 
-		if (args.length != 4)
+		if (args.length != 5)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + "<num Ressource>" + "Nb de ressource") ;
+			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + "<R>" +"<num Ressource>" + "Nb de ressource") ;
 			return ;
 		}
 		try
@@ -90,7 +191,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(Integer.parseInt(args[2]),Integer.parseInt(args[3])) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4])) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)
@@ -104,7 +205,7 @@ public class ProducteurImpl extends ProducteurPOA
 			org.omg.CORBA.Object obj = orb.string_to_object(reference) ;
 
 			// obtenir reference sur l'objet distant
-			prod.cord = CoordinateurHelper.narrow(obj) ;
+			prod.coord = CoordinateurHelper.narrow(obj) ;
 			if (prod.producteur == null)
 			{
 				System.out.println("Pb pour contacter le serveur") ;
@@ -117,8 +218,8 @@ public class ProducteurImpl extends ProducteurPOA
 			prod.thread = new ThreadRun(orb) ;
 			prod.thread.start() ;
 		//	orb.run();
-	//		prod.cord.ping(1000);
-			prod.cord.ajoutProd(prod.producteur);
+	//		prod.coord.ping(1000);
+			prod.connection();
 			prod.thread.join();
 		//	prod.loop() ;
 		}

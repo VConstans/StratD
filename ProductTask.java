@@ -12,6 +12,6 @@ public class ProductTask extends TimerTask
 
 	public void run()
 	{
-		prod.production(1);
+		prod.production();
 	}
 }

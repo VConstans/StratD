@@ -57,7 +57,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 		{
 			list_joueur.add(j);
 			System.out.println("======+> ajout joueur"+list_joueur.size());
-	//		sendList();
 			verificationCommencement();
 			return list_joueur.size();
 		}
@@ -67,13 +66,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
-	synchronized public int ajoutProd(Producteur p)
+	synchronized public int ajoutProd(Producteur p,boolean modeDeJeu)
 	{
+		if(RbR != modeDeJeu)
+		{
+			return -2;
+		}
 		if(list_prod.size()<maxProd)
 		{
 			list_prod.add(p);
-//			System.out.println(list_prod.size());
-	//		sendList();
+			System.out.println("======+> ajout prod"+list_prod.size());
 			verificationCommencement();
 			return list_prod.size();
 		}
@@ -195,14 +197,23 @@ public class CoordinateurImpl extends CoordinateurPOA
 			return;
 		}
 
-		int indexTour=0;
+		int i;
 
 		while(true)
 		{
-			System.out.println("Commence tour");
-			commenceTour();
-			list_joueur.get(indexTour).donneTour();
-			indexTour=(indexTour+1)%list_joueur.size();
+			for(i=0;i<list_joueur.size();i++)
+			{
+				commenceTour();
+				list_joueur.get(i).donneTour();
+			}
+			System.out.println("Milieu");
+			for(i=0;i<list_prod.size();i++)
+			{
+				commenceTour();
+				System.out.println("passe");
+				list_prod.get(i).donneTour();
+			}
+
 		}
 	}
 
