@@ -27,10 +27,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 	Lock lock = new ReentrantLock();
 	Condition demarrage = lock.newCondition();
 
+	Lock tour = new ReentrantLock();
+	Condition entrerTour = tour.newCondition();
+	Condition finTour = tour.newCondition();
+
+	boolean tourEnCours = false;
+
 
 	public CoordinateurImpl(String s,int maxJ, int maxP)
 	{
-//		lock.lock();
+		System.out.println(s);
 		if(s.equals("R"))
 		{
 			RbR=true;
@@ -83,15 +89,55 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
-	public void finTour()
+	public void finTour()// throws InterruptedException
 	{
-		try{
-		lock.unlock();
-		System.out.println("Unlock");
-		} catch(Exception e)
+		System.out.println(" fintour");
+		try
 		{
-			System.out.println("erreur unlock");
+		tour.lock();
+
+		try
+		{
+			while(!tourEnCours)
+			{
+				finTour.await();
+			}
+			tourEnCours = false;
+			entrerTour.signal();
 		}
+		finally
+		{
+			tour.unlock();
+		}
+		} catch (InterruptedException e)
+		{ System.out.println("InterruptedException");}
+
+		System.out.println("fini");
+	}
+
+
+	private void commenceTour()// throws InterruptedException
+	{
+		System.out.println(" commencetour");
+		try
+		{
+		tour.lock();
+		try
+		{
+			while(tourEnCours)
+			{
+				entrerTour.await();
+			}
+			tourEnCours = true;
+			finTour.signal();
+		}
+		finally
+		{
+			tour.unlock();
+		}
+		}catch(InterruptedException e)
+		{ System.out.println("InterruptedException");}
+		System.out.println("commence");
 	}
 
 
@@ -147,6 +193,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void boucleDeTour()
 	{
+			System.out.println("boucle");
 		if(list_joueur.size() == 0)
 		{
 			return;
@@ -154,19 +201,11 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 		int indexTour=0;
 
-//		while(true)
-		int i;
-		for(i=0;i<2;i++)
+		while(true)
 		{
-			try{
-			lock.lock();
-			} catch (Exception e)
-			{
-				System.out.println("Erreur lock");
-			}
-
-		System.out.println("===================================+>passe");
-			list_joueur.get(indexTour).joueTour();
+			System.out.println("Commence tour");
+			commenceTour();
+			list_joueur.get(indexTour).donneTour();
 			indexTour=(indexTour+1)%list_joueur.size();
 		}
 	}

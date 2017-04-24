@@ -42,7 +42,7 @@ module StratD
 		void rendRessource(in Ressource r);
 		void penaliseVole(in long idTransaction);
 		oneway void gameLoop();
-		void joueTour();
+		void donneTour();
 		boolean estVole(in Ressource r);
 	};
 

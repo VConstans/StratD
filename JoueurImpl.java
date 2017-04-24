@@ -29,35 +29,54 @@ public class JoueurImpl extends JoueurPOA
 
 	Ressource[] connaissanceRessource;
 
+	boolean mon_tour = true;
+
 	int[] ressource=new int[5];
 	int[] besoin=new int[5];
 
 
-	boolean RbR = false;	//TODO modifier
+	boolean RbR = false;
 
 	Lock tour = new ReentrantLock();
+	Condition entrerTour = tour.newCondition();
+	Condition finTour = tour.newCondition();
+	
 
 
-	public JoueurImpl(String[] args)
+	public JoueurImpl(String args)
 	{
-		if(args[0].equals("R"))
+		System.out.println(args);
+		if(args.equals("R"))
 		{
 			RbR=true;
 		}
 
-		tour.lock();
 	}
 
 
-	public void joueTour()
+	public void donneTour()// throws InterruptedException
 	{
+		System.out.println(id+") donnetour");
 		try
 		{
-		tour.unlock();
-		} catch (Exception e)
+		tour.lock();
+
+		try
 		{
-			System.out.println("==========+++>erreur "+id);
+			while(!mon_tour)
+			{
+				finTour.await();
+			}
+			mon_tour = false;
+			entrerTour.signal();
 		}
+		finally
+		{
+			tour.unlock();
+		}
+		} catch (InterruptedException e)
+		{ System.out.println("InterruptedException");}
+		System.out.println("fini");
 	}
 
 
@@ -147,11 +166,11 @@ public class JoueurImpl extends JoueurPOA
 
 		commenceObservation();
 		int i=0;
-		while(/*!verifRessource()*/i<5)
+		while(/*!verifRessource()*/i<1)
 		{
 			if(RbR)
 			{
-				tour.lock();
+				prendTour();
 			}
 			if(id==1)
 			{
@@ -164,12 +183,37 @@ public class JoueurImpl extends JoueurPOA
 			}
 			if(RbR)
 			{
-			//	coord.finTour();
+				coord.finTour();
 			}
 		i+=1;
 		}
 		finObservation();
 
+	}
+
+	private void prendTour()// throws InterruptedException
+	{
+		System.out.println(id+") prendtour");
+		try
+		{
+		tour.lock();
+		try
+		{
+			while(mon_tour)
+			{
+				entrerTour.await();
+			}
+			mon_tour = true;
+			finTour.signal();
+		}
+		finally
+		{
+			tour.unlock();
+		}
+		} catch (InterruptedException e)
+		{ System.out.println("InterruptedException");}
+
+		System.out.println("commence");
 	}
 
 
@@ -309,7 +353,7 @@ public class JoueurImpl extends JoueurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			joueur = new JoueurImpl(args) ;
+			joueur = new JoueurImpl(args[2]) ;
 
 			joueur.besoin[0]=7;	//TODO Enlever
 			joueur.ressource[0]=5;	//TODO Enlever
