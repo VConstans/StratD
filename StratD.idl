@@ -3,7 +3,7 @@ module StratD
 
 	struct Ressource
 	{
-		long type;
+		string type;
 		long nb;
 	};
 
