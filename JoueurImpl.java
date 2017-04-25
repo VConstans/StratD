@@ -26,13 +26,14 @@ public class JoueurImpl extends JoueurPOA
 	Joueur[] list_joueur;
 	ArrayList<Joueur> observateur = new ArrayList<Joueur>();
 	ArrayList<Transaction> listTransaction = new ArrayList<Transaction>();
+	tabRessource ressource = new tabRessource();
+	tabRessource besoin = new tabRessource();
+
 
 	Ressource[] connaissanceRessource;
 
 	boolean mon_tour = true;
 
-	int[] ressource=new int[5];
-	int[] besoin=new int[5];
 
 
 	boolean RbR = false;
@@ -80,9 +81,15 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized public boolean estVole(Ressource r)
 	{
-		if(r.nb <= ressource[r.type])
+		int nbRessourceCourrante = ressource.get(r.type);
+		if(nbRessourceCourrante == -1)
 		{
-			ressource[r.type]-=r.nb;
+			return false;
+		}
+
+		if(r.nb <= nbRessourceCourrante)
+		{
+			ressource.put(r.type,nbRessourceCourrante+r.nb);
 			return true;
 		}
 		else
@@ -134,7 +141,14 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized public void rendRessource(Ressource r)
 	{
-		ressource[r.type]+=r.nb;
+		if(ressource.get(r.type) == -1)
+		{
+			ressource.put(r.type,r.nb);
+		}
+		else
+		{
+			ressource.put(r.type,ressource.get(r.type)+r.nb);
+		}
 	}
 
 
@@ -146,7 +160,13 @@ public class JoueurImpl extends JoueurPOA
 		{
 			//System.out.println("Penalisation");
 			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
-			ressource[t.ressource.type]-=t.ressource.nb;
+
+			if(ressource.get(t.ressource.type) == -1)
+			{
+				return;
+			}
+
+			ressource.put(t.ressource.type,ressource.get(t.ressource.type)-t.ressource.nb);
 			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
 			list_joueur[t.recepteur].rendRessource(t.ressource);
 			t.penalise = true;
@@ -173,7 +193,7 @@ public class JoueurImpl extends JoueurPOA
 			/*if(id==1)
 			{*/
 				//System.out.println(id+"======================>VOLE");
-				vole(0,new Ressource(0,1));
+				vole(0,new Ressource("petrole",1));
 			/*}
 			else
 			{
@@ -252,8 +272,16 @@ public class JoueurImpl extends JoueurPOA
 		if(list_prod[p].demandeRessource(r))
 		{
 			//System.out.println(id+") ressource avant demande "+ressource[r.type]);
-			ressource[r.type]+=r.nb;
-			//System.out.println(id+") ressource après demande "+ressource[r.type]);
+
+			if(ressource.get(r.type) == -1)
+			{
+				ressource.put(r.type,r.nb);
+			}
+			else
+			{
+				ressource.put(r.type,ressource.get(r.type)+r.nb);
+				//System.out.println(id+") ressource après demande "+ressource[r.type]);
+			}
 			apprentissageRessource(p,r);
 		}
 		else
@@ -280,10 +308,18 @@ public class JoueurImpl extends JoueurPOA
 		if(list_joueur[j].estVole(r))
 		{
 			//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
-			ressource[r.type]+=r.nb;
-			//System.out.println(id+") ressource après vole "+ressource[r.type]);
-			listTransaction.add(new Transaction(id,j,r,true,false));
-			annonceVole(listTransaction.size()-1);
+
+			if(ressource.get(r.type) == -1)
+			{
+				ressource.put(r.type,r.nb);
+			}
+			else
+			{
+				ressource.put(r.type,ressource.get(r.type)+r.nb);
+			}
+				//System.out.println(id+") ressource après vole "+ressource[r.type]);
+				listTransaction.add(new Transaction(id,j,r,true,false));
+				annonceVole(listTransaction.size()-1);
 		}
 		else
 		{
@@ -315,9 +351,9 @@ public class JoueurImpl extends JoueurPOA
 	private boolean verifRessource()
 	{
 		int i;
-		for(i=0;i<ressource.length;i++)
+		for(Map.Entry<String,Integer> entree : ((besoin.getTab()).entrySet()))
 		{
-			if(ressource[i] < besoin[i])
+			if(ressource.get(entree.getKey()) < entree.getValue())
 			{
 				return false;
 			}
@@ -352,8 +388,8 @@ public class JoueurImpl extends JoueurPOA
 			// creer l'objet qui sera appele' depuis le serveur
 			joueur = new JoueurImpl(args[2]) ;
 
-			joueur.besoin[0]=7;	//TODO Enlever
-			joueur.ressource[0]=5;	//TODO Enlever
+			joueur.besoin.put("petrole",7);	//TODO Enlever
+			joueur.ressource.put("petrole",5);	//TODO Enlever
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 

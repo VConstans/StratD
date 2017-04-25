@@ -23,7 +23,7 @@ public class ProducteurImpl extends ProducteurPOA
 	Timer timer;
 
 	int id;
-	int ressourceType;
+	String ressourceType;
 	int nbRessource;
 	int produit;
 
@@ -36,7 +36,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 	boolean mon_tour = true;
 
-	public ProducteurImpl(String mode,int type,int nb)
+	public ProducteurImpl(String mode,String type,int nb)
 	{
 		if(mode.equals("R"))
 		{
@@ -191,7 +191,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4])) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(args[2],args[3],Integer.parseInt(args[4])) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)
