@@ -34,7 +34,7 @@ public class JoueurImpl extends JoueurPOA
 
 	boolean mon_tour = true;
 
-	boolean protege =true;
+	boolean protege = false;
 
 	boolean RbR = false;
 
@@ -141,13 +141,13 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-/*	public void observeVole(int idTransaction,int idVoleur)
+	public void observe(int idProd,Ressource r)
 	{
 		//TODO if observe
-		System.out.println("Vole commis par "+idVoleur+" observé par "+id);
-		list_joueur[idVoleur-1].penaliseVole(idTransaction);
+		//TODO supprimer methode et appeler direct apprentissage si elle reste vide
+		apprentissageRessource(idProd,r);
 	}
-*/
+
 
 /*	synchronized public void rendRessource(Ressource r)
 	{
@@ -162,7 +162,7 @@ public class JoueurImpl extends JoueurPOA
 	}
 */
 
-	synchronized private void penaliseVole()
+	synchronized private void penaliseVole(int transaction)
 	{
 /*		Transaction t = listTransaction.get(idTransaction);
 
@@ -186,6 +186,7 @@ public class JoueurImpl extends JoueurPOA
 			System.out.println("Penalisation deja faite ou pas un vole");
 		}*/
 
+		listTransaction.get(transaction).penalise = true;
 		System.out.println("penalisation vole");
 	}
 
@@ -255,7 +256,7 @@ public class JoueurImpl extends JoueurPOA
 		for(i=0;i<list_joueur.length;i++)
 		{
 			if(id != i+1)
-			list_joueur[i].ajoutObservateur(player);
+				list_joueur[i].ajoutObservateur(player);
 		}
 	}
 
@@ -267,7 +268,8 @@ public class JoueurImpl extends JoueurPOA
 
 		for(i=0;i<list_joueur.length;i++)
 		{
-			list_joueur[i].suppObservateur(player);
+			if(id != i+1)
+				list_joueur[i].suppObservateur(player);
 		}
 	}
 
@@ -296,6 +298,7 @@ public class JoueurImpl extends JoueurPOA
 				//System.out.println(id+") ressource après demande "+ressource[r.type]);
 			}
 			apprentissageRessource(p,r);
+			listTransaction.add(new Transaction(id,p,r,false,false));
 		}
 		else
 		{
@@ -304,19 +307,21 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-/*	private void annonceVole(int idTransaction)
+	private void annonceObservation(int idProd,Ressource r)
 	{
 		int i;
 
 		for(i=0;i<observateur.size();i++)
 		{
-				observateur.get(i).observeVole(idTransaction,id);
+				observateur.get(i).observe(idProd,r);
 		}
 	}
-*/
+
 
 	synchronized private void vole(int j,Ressource r)
 	{
+		listTransaction.add(new Transaction(id,j,r,true,false));
+
 		switch(list_joueur[j].estVole(r))
 		{
 			case 1:
@@ -332,12 +337,11 @@ public class JoueurImpl extends JoueurPOA
 					ressource.put(r.type,ressource.get(r.type)+r.nb);
 				}
 					//System.out.println(id+") ressource après vole "+ressource[r.type]);
-					listTransaction.add(new Transaction(id,j,r,true,false));
 				//	annonceVole(listTransaction.size()-1);
 
 				break;
 			case -1:
-				penaliseVole();
+				penaliseVole(listTransaction.size()-1);
 				break;
 			case 0:
 	//			System.out.println("Demande impossible");
@@ -380,6 +384,11 @@ public class JoueurImpl extends JoueurPOA
 		return true;
 	}
 
+
+	private void sondeProd(int idProd)
+	{
+		apprentissageRessource(idProd,list_prod[i].sondeProd());
+	}
 
 
 
