@@ -18,9 +18,9 @@ public class tabRessource{
 		}
 	}
 
-	public int put(String key,int value)
+	public void put(String key,int value)
 	{
-		return (ressource.put(key,Integer.valueOf(value))).intValue();
+		ressource.put(key,Integer.valueOf(value));
 	}
 
 	public boolean containsKey(String key)

@@ -39,12 +39,9 @@ module StratD
 		void rcvListJoueur(in tabJoueur joueur);
 		void ajoutObservateur(in Joueur j);
 		void suppObservateur(in Joueur j);
-		oneway void observeVole(in long idTransaction, in long idVoleur);
-		void rendRessource(in Ressource r);
-		void penaliseVole(in long idTransaction);
 		oneway void gameLoop();
 		void donneTour();
-		boolean estVole(in Ressource r);
+		long estVole(in Ressource r);
 	};
 
 

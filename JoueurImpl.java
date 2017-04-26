@@ -34,7 +34,7 @@ public class JoueurImpl extends JoueurPOA
 
 	boolean mon_tour = true;
 
-
+	boolean protege =true;
 
 	boolean RbR = false;
 
@@ -79,22 +79,32 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	synchronized public boolean estVole(Ressource r)
+	synchronized public int estVole(Ressource r)
 	{
-		int nbRessourceCourrante = ressource.get(r.type);
-		if(nbRessourceCourrante == -1)
+		if(protege)
 		{
-			return false;
-		}
-
-		if(r.nb <= nbRessourceCourrante)
-		{
-			ressource.put(r.type,nbRessourceCourrante+r.nb);
-			return true;
+			System.out.println("Voleur vu");
+			return -1;
 		}
 		else
 		{
-			return false;
+			System.out.println(id+"tu es volé");
+			int nbRessourceCourrante = ressource.get(r.type);
+			if(nbRessourceCourrante == -1)
+			{
+				return 0;
+			}
+
+			if(r.nb <= nbRessourceCourrante)
+			{
+				ressource.put(r.type,nbRessourceCourrante-r.nb);
+				return 1;
+
+			}
+			else
+			{
+				return 0;
+			}
 		}
 	}
 
@@ -131,15 +141,15 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void observeVole(int idTransaction,int idVoleur)
+/*	public void observeVole(int idTransaction,int idVoleur)
 	{
 		//TODO if observe
 		System.out.println("Vole commis par "+idVoleur+" observé par "+id);
 		list_joueur[idVoleur-1].penaliseVole(idTransaction);
 	}
+*/
 
-
-	synchronized public void rendRessource(Ressource r)
+/*	synchronized public void rendRessource(Ressource r)
 	{
 		if(ressource.get(r.type) == -1)
 		{
@@ -150,11 +160,11 @@ public class JoueurImpl extends JoueurPOA
 			ressource.put(r.type,ressource.get(r.type)+r.nb);
 		}
 	}
+*/
 
-
-	synchronized public void penaliseVole(int idTransaction)
+	synchronized private void penaliseVole()
 	{
-		Transaction t = listTransaction.get(idTransaction);
+/*		Transaction t = listTransaction.get(idTransaction);
 
 		if(t.vole == true && t.penalise == false)
 		{
@@ -174,7 +184,9 @@ public class JoueurImpl extends JoueurPOA
 		else
 		{
 			System.out.println("Penalisation deja faite ou pas un vole");
-		}
+		}*/
+
+		System.out.println("penalisation vole");
 	}
 
 
@@ -193,7 +205,8 @@ public class JoueurImpl extends JoueurPOA
 			/*if(id==1)
 			{*/
 				//System.out.println(id+"======================>VOLE");
-				vole(0,new Ressource("petrole",1));
+				if(id==2)
+					vole(0,new Ressource("petrole",1));
 			/*}
 			else
 			{
@@ -291,7 +304,7 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void annonceVole(int idTransaction)
+/*	private void annonceVole(int idTransaction)
 	{
 		int i;
 
@@ -300,30 +313,35 @@ public class JoueurImpl extends JoueurPOA
 				observateur.get(i).observeVole(idTransaction,id);
 		}
 	}
-
+*/
 
 	synchronized private void vole(int j,Ressource r)
 	{
-
-		if(list_joueur[j].estVole(r))
+		switch(list_joueur[j].estVole(r))
 		{
-			//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
+			case 1:
+				//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 
-			if(ressource.get(r.type) == -1)
-			{
-				ressource.put(r.type,r.nb);
-			}
-			else
-			{
-				ressource.put(r.type,ressource.get(r.type)+r.nb);
-			}
-				//System.out.println(id+") ressource après vole "+ressource[r.type]);
-				listTransaction.add(new Transaction(id,j,r,true,false));
-				annonceVole(listTransaction.size()-1);
-		}
-		else
-		{
-//			System.out.println("Demande impossible");
+				System.out.println(id+" vole");
+				if(ressource.get(r.type) == -1)
+				{
+					ressource.put(r.type,r.nb);
+				}
+				else
+				{
+					ressource.put(r.type,ressource.get(r.type)+r.nb);
+				}
+					//System.out.println(id+") ressource après vole "+ressource[r.type]);
+					listTransaction.add(new Transaction(id,j,r,true,false));
+				//	annonceVole(listTransaction.size()-1);
+
+				break;
+			case -1:
+				penaliseVole();
+				break;
+			case 0:
+	//			System.out.println("Demande impossible");
+				break;
 		}
 	}
 
