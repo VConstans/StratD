@@ -29,6 +29,8 @@ public class JoueurImpl extends JoueurPOA
 	tabRessource ressource = new tabRessource();
 	tabRessource besoin = new tabRessource();
 
+	String[] ressourceEnJeu;
+
 
 	Ressource[] connaissanceRessource;
 
@@ -109,18 +111,26 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-
-	public void rcvListProd(Producteur[] prod)
+	public void rcvParametreJeu(Joueur[] joueur, Producteur[] prod, String[] ressource, Ressource[] tabBesoin, boolean RbR)
 	{
 		list_prod = prod;
 		connaissanceRessource = new Ressource[list_prod.length];
-		//System.out.println(id+" : "+list_prod.length);
-	}
 
 
-	public void rcvListJoueur(Joueur[] joueur)
-	{
 		list_joueur = joueur;
+
+
+		ressourceEnJeu = ressource;
+
+		int i;
+
+		for(i=0;i<tabBesoin.length;i++)
+		{
+			besoin.put(tabBesoin[i].type,tabBesoin[i].nb);
+		}
+
+		this.RbR = RbR;
+
 	}
 
 
@@ -313,7 +323,7 @@ public class JoueurImpl extends JoueurPOA
 
 		for(i=0;i<observateur.size();i++)
 		{
-				observateur.get(i).observe(idProd,r);
+			observateur.get(i).observe(idProd,r);
 		}
 	}
 
@@ -387,7 +397,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void sondeProd(int idProd)
 	{
-		apprentissageRessource(idProd,list_prod[i].sondeProd());
+		apprentissageRessource(idProd,list_prod[idProd].sondeProd());
 	}
 
 

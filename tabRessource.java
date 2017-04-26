@@ -2,7 +2,7 @@ import java.util.*;
 
 public class tabRessource{
 
-	private HashMap<String,Integer> ressource = new HashMap<String,Integer>();
+	private Hashtable<String,Integer> ressource = new Hashtable<String,Integer>();
 
 	public int get(String key)
 	{
@@ -38,7 +38,7 @@ public class tabRessource{
 		return ressource.size();
 	}
 
-	public HashMap<String,Integer> getTab()
+	public Hashtable<String,Integer> getTab()
 	{
 		return ressource;
 	}

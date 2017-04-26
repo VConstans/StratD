@@ -153,7 +153,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 	private void connection()
 	{
-		id = coord.ajoutProd(producteur, RbR);
+		id = coord.ajoutProd(producteur, RbR, ressourceType);
 
 		switch(id)
 		{

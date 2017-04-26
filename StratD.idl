@@ -29,26 +29,28 @@ module StratD
 
 
 	typedef sequence<Producteur> tabProducteur;
+	typedef sequence<string> tabRessource;
+	typedef sequence<Ressource> tabBesoin;
 
 
 	interface Joueur
 	{
 		typedef sequence<Joueur> tabJoueur;
 
-		void rcvListProd(in tabProducteur prod);
-		void rcvListJoueur(in tabJoueur joueur);
+		void rcvParametreJeu(in tabJoueur joueur, in tabProducteur prod, in tabRessource ressource, in tabBesoin besoin, in boolean RbR);
 		void ajoutObservateur(in Joueur j);
 		void suppObservateur(in Joueur j);
 		oneway void gameLoop();
 		void donneTour();
 		long estVole(in Ressource r);
+		void observe(in long idProd, in Ressource r);
 	};
 
 
 	interface Coordinateur
 	{
 		long ajoutJoueur(in Joueur j, in boolean RbR);
-		long ajoutProd(in Producteur p,in boolean RbR);
+		long ajoutProd(in Producteur p,in boolean RbR, in string ressourceType);
 		void ping(in long id);
 		void finTour();
 	};

@@ -3,6 +3,7 @@ import org.omg.PortableServer.*;
 import java.util.*;
 import java.util.concurrent.locks.*;
 import org.omg.CosNaming.*;
+import StratD.Ressource;
 import StratD.CoordinateurPOA;
 import StratD.Coordinateur;
 import StratD.JoueurPOA;
@@ -16,6 +17,10 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	ArrayList<Joueur> list_joueur = new ArrayList<Joueur>();
 	ArrayList<Producteur> list_prod = new ArrayList<Producteur>();
+
+	HashSet<String> list_ressource = new HashSet<String>();
+
+	ArrayList<Ressource> list_besoin = new ArrayList();
 
 
 	int maxJoueur;
@@ -66,7 +71,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
-	synchronized public int ajoutProd(Producteur p,boolean modeDeJeu)
+	synchronized public int ajoutProd(Producteur p,boolean modeDeJeu,String ressourceType)
 	{
 		if(RbR != modeDeJeu)
 		{
@@ -76,6 +81,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		{
 			list_prod.add(p);
 			System.out.println("======+> ajout prod"+list_prod.size());
+			list_ressource.add(ressourceType);
 			verificationCommencement();
 			return list_prod.size();
 		}
@@ -144,10 +150,11 @@ public class CoordinateurImpl extends CoordinateurPOA
 		if(list_joueur.size() == maxJoueur && list_prod.size() == maxProd)
 		{
 			lock.lock();
+
 			try{
-			demarrage.signal();
+				demarrage.signal();
 			} finally {
-			lock.unlock();
+				lock.unlock();
 			}
 		}
 	}
@@ -155,22 +162,24 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void sendList()
 	{
-//		if(list_joueur.size()==maxJoueur && list_joueur.size() == maxProd)
-//		{
-			Producteur[] tabProd =new Producteur[list_prod.size()];
-			tabProd = list_prod.toArray(tabProd);
+		Producteur[] tabProd =new Producteur[list_prod.size()];
+		tabProd = list_prod.toArray(tabProd);
 
-			Joueur[] tabJoueur = new Joueur[list_joueur.size()];
-			tabJoueur = list_joueur.toArray(tabJoueur);
+		Joueur[] tabJoueur = new Joueur[list_joueur.size()];
+		tabJoueur = list_joueur.toArray(tabJoueur);
 
-			int i;
-			
-			for(i=0;i<list_joueur.size();i++)
-			{
-				list_joueur.get(i).rcvListProd(tabProd);
-				list_joueur.get(i).rcvListJoueur(tabJoueur);
-			}
-//		}
+		String[] tabRessource = new String[list_ressource.size()];
+		tabRessource = list_ressource.toArray(tabRessource);
+
+		Ressource[] tabBesoin = new Ressource[list_besoin.size()];
+		tabBesoin = list_besoin.toArray(tabBesoin);
+
+		int i;
+		
+		for(i=0;i<list_joueur.size();i++)
+		{
+			list_joueur.get(i).rcvParametreJeu(tabJoueur, tabProd, tabRessource, tabBesoin, RbR);
+		}
 	}
 
 
@@ -270,7 +279,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 			}
 
 			System.out.println("après");
-			System.out.flush();
 
 			coord.preparationJeu();
 
