@@ -224,6 +224,8 @@ public class JoueurImpl extends JoueurPOA
 		}
 		finObservation();
 
+		coord.finJoueur(id);
+
 	}
 
 	private void prendTour()// throws InterruptedException

@@ -22,6 +22,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	ArrayList<Ressource> list_besoin = new ArrayList();
 
+	Hashtable<Integer,Integer> joueur_fini = new Hashtable<Integer,Integer>();
+
 
 	int maxJoueur;
 	int maxProd;
@@ -122,6 +124,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
+	public void finJoueur(int id)
+	{
+		joueur_fini.put(new Integer(id),new Integer(joueur_fini.size()+1));
+	}
+
+
 	private void commenceTour()// throws InterruptedException
 	{
 		try
@@ -200,7 +208,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void boucleDeTour()
 	{
-			System.out.println("boucle");
 		if(list_joueur.size() == 0)
 		{
 			return;
@@ -208,22 +215,24 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 		int i;
 
-		while(true)
+		while(joueur_fini.size() != list_joueur.size())
 		{
 			for(i=0;i<list_joueur.size();i++)
 			{
-				commenceTour();
-				list_joueur.get(i).donneTour();
+				if(!joueur_fini.containsKey(new Integer(i+1)))
+				{
+					commenceTour();
+					list_joueur.get(i).donneTour();
+				}
 			}
-			System.out.println("Milieu");
 			for(i=0;i<list_prod.size();i++)
 			{
 				commenceTour();
-				System.out.println("passe");
 				list_prod.get(i).donneTour();
 			}
 
 		}
+		System.out.println("fin boucle");
 	}
 
 	private void preparationJeu()
