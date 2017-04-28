@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.locks.*;
 import java.io.*;
 import java.io.IOException;
+import java.sql.*;
 import org.omg.CosNaming.*;
 import StratD.Coordinateur;
 import StratD.CoordinateurHelper;
@@ -206,28 +207,20 @@ public class JoueurImpl extends JoueurPOA
 		//System.out.println("Game loop");
 
 		commenceObservation();
-		int i=0;
-		while(/*!verifRessource()*/i<3)
+
+		while(!verifRessource())
 		{
 			if(RbR)
 			{
 				prendTour();
 			}
-			/*if(id==1)
-			{*/
-				//System.out.println(id+"======================>VOLE");
-				if(id==2)
-					vole(0,new Ressource("petrole",1));
-			/*}
-			else
-			{
-				demandeRessource(0,new Ressource(0,1));
-			}*/
+
+			demandeRessource(0,new Ressource("petrole",1));
+
 			if(RbR)
 			{
 				coord.finTour();
 			}
-		i+=1;
 		}
 		finObservation();
 
@@ -308,7 +301,8 @@ public class JoueurImpl extends JoueurPOA
 				//System.out.println(id+") ressource après demande "+ressource[r.type]);
 			}
 			apprentissageRessource(p,r);
-			listTransaction.add(new Transaction(id,p,r,false,false));
+			Timestamp time = new Timestamp(System.currentTimeMillis());
+			listTransaction.add(new Transaction(time.getTime(),id,p,r,false,false));
 		}
 		else
 		{
@@ -330,7 +324,8 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized private void vole(int j,Ressource r)
 	{
-		listTransaction.add(new Transaction(id,j,r,true,false));
+		Timestamp time = new Timestamp(System.currentTimeMillis());
+		listTransaction.add(new Transaction(time.getTime(),id,j,r,true,false));
 
 		switch(list_joueur[j].estVole(r))
 		{
@@ -426,7 +421,7 @@ public class JoueurImpl extends JoueurPOA
 			joueur = new JoueurImpl(args[2]) ;
 
 			joueur.besoin.put("petrole",7);	//TODO Enlever
-			joueur.ressource.put("petrole",5);	//TODO Enlever
+			joueur.ressource.put("petrole",3);	//TODO Enlever
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 

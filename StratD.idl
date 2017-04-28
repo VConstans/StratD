@@ -10,6 +10,7 @@ module StratD
 
 	struct Transaction
 	{
+		long long timeStamp;
 		long emetteur;
 		long recepteur;
 		Ressource ressource;
