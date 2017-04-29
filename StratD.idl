@@ -21,6 +21,7 @@ module StratD
 
 	interface Producteur
 	{
+		void rcvParametreJeu(in boolean RbR);
 		boolean demandeRessource(in Ressource r);
 		Ressource sondeProd();
 		void annonce();
@@ -50,8 +51,8 @@ module StratD
 
 	interface Coordinateur
 	{
-		long ajoutJoueur(in Joueur j, in boolean RbR);
-		long ajoutProd(in Producteur p,in boolean RbR, in string ressourceType);
+		long ajoutJoueur(in Joueur j);
+		long ajoutProd(in Producteur p, in string ressourceType);
 		void ping(in long id);
 		void finTour();
 		void finJoueur(in long id);

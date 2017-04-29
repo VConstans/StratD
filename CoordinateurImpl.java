@@ -53,13 +53,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
-	synchronized public int ajoutJoueur(Joueur j, boolean modeDeJeu)
+	synchronized public int ajoutJoueur(Joueur j)
 	{
-		if(RbR != modeDeJeu)
-		{
-			return -2;
-		}
-
 		if(list_joueur.size()<maxJoueur)
 		{
 			list_joueur.add(j);
@@ -73,12 +68,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 	}
 
-	synchronized public int ajoutProd(Producteur p,boolean modeDeJeu,String ressourceType)
+	synchronized public int ajoutProd(Producteur p,String ressourceType)
 	{
-		if(RbR != modeDeJeu)
-		{
-			return -2;
-		}
 		if(list_prod.size()<maxProd)
 		{
 			list_prod.add(p);
@@ -187,6 +178,11 @@ public class CoordinateurImpl extends CoordinateurPOA
 		for(i=0;i<list_joueur.size();i++)
 		{
 			list_joueur.get(i).rcvParametreJeu(tabJoueur, tabProd, tabRessource, tabBesoin, RbR);
+		}
+
+		for(i=0;i<list_prod.size();i++)
+		{
+			list_prod.get(i).rcvParametreJeu(RbR);
 		}
 	}
 

@@ -36,12 +36,8 @@ public class ProducteurImpl extends ProducteurPOA
 
 	boolean mon_tour = true;
 
-	public ProducteurImpl(String mode,String type,int nb)
+	public ProducteurImpl(String type,int nb)
 	{
-		if(mode.equals("R"))
-		{
-			RbR=true;
-		}
 		ressourceType=type;
 		nbRessource=nb;
 		produit=0;
@@ -72,6 +68,13 @@ public class ProducteurImpl extends ProducteurPOA
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
 	}
+
+
+	public void rcvParametreJeu(boolean RbR)
+	{
+		this.RbR = RbR;
+	}
+
 
 	private void prendTour()// throws InterruptedException
 	{
@@ -152,19 +155,15 @@ public class ProducteurImpl extends ProducteurPOA
 
 	private void connection()
 	{
-		id = coord.ajoutProd(producteur, RbR, ressourceType);
+		id = coord.ajoutProd(producteur, ressourceType);
 
-		switch(id)
+		if(id == -1)
 		{
-			case -1:
 				System.out.println("Plus de place disponible "+id);
-				break;
-			case -2:
-				System.out.println("Mode de jeu incompatible "+id);
-				break;
-			default:
+		}
+		else
+		{
 				coord.ping(id);
-				break;
 
 		}
 	}
@@ -175,9 +174,9 @@ public class ProducteurImpl extends ProducteurPOA
 	{
 		ProducteurImpl prod = null ;
 
-		if (args.length != 5)
+		if (args.length != 4)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + "<R>" +"<num Ressource>" + "Nb de ressource") ;
+			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" +"<num Ressource>" + "Nb de ressource") ;
 			return ;
 		}
 		try
@@ -190,7 +189,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(args[2],args[3],Integer.parseInt(args[4])) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(args[2],Integer.parseInt(args[3])) ;	//TODO changer parametre constructeur
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)

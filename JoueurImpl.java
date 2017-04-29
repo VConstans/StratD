@@ -47,17 +47,6 @@ public class JoueurImpl extends JoueurPOA
 	
 
 
-	public JoueurImpl(String args)
-	{
-		//System.out.println(args);
-		if(args.equals("R"))
-		{
-			RbR=true;
-		}
-
-	}
-
-
 	public void donneTour()// throws InterruptedException
 	{
 		try
@@ -358,20 +347,15 @@ public class JoueurImpl extends JoueurPOA
 
 	private void connection()
 	{
-		id = coord.ajoutJoueur(player, RbR);
+		id = coord.ajoutJoueur(player);
 
-		switch(id)
+		if(id == -1)
 		{
-			case -1:
 				System.out.println("Plus de place disponible "+id);
-				break;
-			case -2:
-				System.out.println("Mode de jeu incompatible "+id);
-				break;
-			default:
+		}
+		else
+		{
 				coord.ping(id);
-				break;
-
 		}
 	}
 
@@ -403,9 +387,9 @@ public class JoueurImpl extends JoueurPOA
 	{
 		JoueurImpl joueur = null ;
 
-		if (args.length != 3)
+		if (args.length != 2)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>") ;
+			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>") ;
 			return ;
 		}
 		try
@@ -419,7 +403,7 @@ public class JoueurImpl extends JoueurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			joueur = new JoueurImpl(args[2]) ;
+			joueur = new JoueurImpl() ;
 
 			joueur.besoin.put("petrole",7);	//TODO Enlever
 			joueur.ressource.put("petrole",3);	//TODO Enlever
