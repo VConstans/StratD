@@ -54,6 +54,7 @@ module StratD
 		long ajoutProd(in Producteur p,in boolean RbR, in string ressourceType);
 		void ping(in long id);
 		void finTour();
+		void finJoueur(in long id);
 	};
 
 };

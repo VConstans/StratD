@@ -208,7 +208,9 @@ public class JoueurImpl extends JoueurPOA
 
 		commenceObservation();
 
-		while(!verifRessource())
+		int i=0;
+
+		while(/*!verifRessource()*/i<3)
 		{
 			if(RbR)
 			{
@@ -221,6 +223,7 @@ public class JoueurImpl extends JoueurPOA
 			{
 				coord.finTour();
 			}
+			i+=1;
 		}
 		finObservation();
 
@@ -291,7 +294,6 @@ public class JoueurImpl extends JoueurPOA
 	{
 		if(list_prod[p].demandeRessource(r))
 		{
-			//System.out.println(id+") ressource avant demande "+ressource[r.type]);
 
 			if(ressource.get(r.type) == -1)
 			{
@@ -300,7 +302,6 @@ public class JoueurImpl extends JoueurPOA
 			else
 			{
 				ressource.put(r.type,ressource.get(r.type)+r.nb);
-				//System.out.println(id+") ressource après demande "+ressource[r.type]);
 			}
 			apprentissageRessource(p,r);
 			Timestamp time = new Timestamp(System.currentTimeMillis());
@@ -308,7 +309,7 @@ public class JoueurImpl extends JoueurPOA
 		}
 		else
 		{
-//			System.out.println("Demande impossible");
+			System.out.println("Demande impossible");
 		}
 	}
 
