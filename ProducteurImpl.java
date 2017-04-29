@@ -126,7 +126,9 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public synchronized void production()
 	{
-		produit+=(nbRessource/2)+1;
+		int production = (nbRessource/2)+1;
+		nbRessource -= production;
+		produit+=production;
 		System.out.println("Produit apres production :"+produit);
 	}
 
