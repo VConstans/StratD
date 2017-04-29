@@ -149,43 +149,14 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-/*	synchronized public void rendRessource(Ressource r)
+	public void finDePartie()
 	{
-		if(ressource.get(r.type) == -1)
-		{
-			ressource.put(r.type,r.nb);
-		}
-		else
-		{
-			ressource.put(r.type,ressource.get(r.type)+r.nb);
-		}
+		System.out.println("Fin de partie");
 	}
-*/
+
 
 	synchronized private void penaliseVole(int transaction)
 	{
-/*		Transaction t = listTransaction.get(idTransaction);
-
-		if(t.vole == true && t.penalise == false)
-		{
-			//System.out.println("Penalisation");
-			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" avant rendu "+ressource[t.ressource.type]);
-
-			if(ressource.get(t.ressource.type) == -1)
-			{
-				return;
-			}
-
-			ressource.put(t.ressource.type,ressource.get(t.ressource.type)-t.ressource.nb);
-			//System.out.println("(Voleur) transaction "+idTransaction+" Ressource "+t.ressource.type+" apres rendu "+ressource[t.ressource.type]);
-			list_joueur[t.recepteur].rendRessource(t.ressource);
-			t.penalise = true;
-		}
-		else
-		{
-			System.out.println("Penalisation deja faite ou pas un vole");
-		}*/
-
 		listTransaction.get(transaction).penalise = true;
 		System.out.println("penalisation vole");
 	}

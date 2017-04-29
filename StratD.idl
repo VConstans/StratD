@@ -46,6 +46,7 @@ module StratD
 		void donneTour();
 		long estVole(in Ressource r);
 		void observe(in long idProd, in Ressource r);
+		oneway void finDePartie();
 	};
 
 

@@ -42,16 +42,20 @@ public class CoordinateurImpl extends CoordinateurPOA
 	boolean tourEnCours = false;
 
 
-	public CoordinateurImpl(String s,int maxJ, int maxP, int mdf)
+	public CoordinateurImpl(String s,String mdf,int maxJ, int maxP)
 	{
 		System.out.println(s);
-		if(s.equals("R"))
-		{
-			RbR=true;
-		}
 		maxJoueur=maxJ;
 		maxProd=maxP;
-		modeDeFin = mdf;
+
+		if(mdf.equals("A"))
+		{
+			modeDeFin=2;
+		}
+		else if(mdf.equals("F"))
+		{
+			modeDeFin=1;
+		}
 	}
 
 
@@ -123,7 +127,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 		if((modeDeFin == 1 && joueur_fini.size() == 1) || modeDeFin == 2 && joueur_fini.size() == list_joueur.size())
 		{
-			finDePartie();
+			int i;
+
+			for(i=0;i<list_joueur.size();i++)
+			{
+				finDePartie();
+			}
 		}
 	}
 
@@ -273,7 +282,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		{
 			String [] argv = {"-ORBInitialHost", args[0], "-ORBInitialPort", args[1]} ; 
 			ORB orb = ORB.init(argv, null) ;
-			CoordinateurImpl coord = new CoordinateurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5])) ;
+			CoordinateurImpl coord = new CoordinateurImpl(args[2],args[3],Integer.parseInt(args[4]),Integer.parseInt(args[5])) ;
 
 			// init POA
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")) ;
