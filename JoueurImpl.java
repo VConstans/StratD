@@ -208,9 +208,8 @@ public class JoueurImpl extends JoueurPOA
 
 		commenceObservation();
 
-		int i=0;
 
-		while(/*!verifRessource()*/i<3)
+		while(!verifRessource())
 		{
 			if(RbR)
 			{
@@ -223,7 +222,6 @@ public class JoueurImpl extends JoueurPOA
 			{
 				coord.finTour();
 			}
-			i+=1;
 		}
 		finObservation();
 
