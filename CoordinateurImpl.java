@@ -30,6 +30,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 
 	boolean RbR=false;
+	int modeDeFin;
 
 	Lock lock = new ReentrantLock();
 	Condition demarrage = lock.newCondition();
@@ -41,7 +42,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 	boolean tourEnCours = false;
 
 
-	public CoordinateurImpl(String s,int maxJ, int maxP)
+	public CoordinateurImpl(String s,int maxJ, int maxP, int mdf)
 	{
 		System.out.println(s);
 		if(s.equals("R"))
@@ -50,6 +51,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		}
 		maxJoueur=maxJ;
 		maxProd=maxP;
+		modeDeFin = mdf;
 	}
 
 
@@ -118,8 +120,23 @@ public class CoordinateurImpl extends CoordinateurPOA
 	public void finJoueur(int id)
 	{
 		joueur_fini.put(new Integer(id),new Integer(joueur_fini.size()+1));
+
+		if((modeDeFin == 1 && joueur_fini.size() == 1) || modeDeFin == 2 && joueur_fini.size() == list_joueur.size())
+		{
+			finDePartie();
+		}
 	}
 
+
+	private void finDePartie()
+	{
+		int i;
+
+		for(i=0;i<list_joueur.size();i++)
+		{
+			list_joueur.get(i).finDePartie();
+		}	
+	}
 
 	private void commenceTour()// throws InterruptedException
 	{
@@ -247,16 +264,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public static void main(String args[])
 	{
-		if (args.length != 5)
+		if (args.length != 6)
 		{
-			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>" + " nb de joueur" + " nb de prod") ;
+			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>" + " nb de joueur" + " nb de prod" + "mode de fin: F/A") ;
 			return ;
 		}
 		try
 		{
 			String [] argv = {"-ORBInitialHost", args[0], "-ORBInitialPort", args[1]} ; 
 			ORB orb = ORB.init(argv, null) ;
-			CoordinateurImpl coord = new CoordinateurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4])) ;
+			CoordinateurImpl coord = new CoordinateurImpl(args[2],Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5])) ;
 
 			// init POA
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")) ;
