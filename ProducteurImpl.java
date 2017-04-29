@@ -100,10 +100,9 @@ public class ProducteurImpl extends ProducteurPOA
 
 	synchronized public boolean demandeRessource(Ressource r)
 	{
-		if(r.type == ressourceType && r.nb <= produit)
+		if(r.type.equals(ressourceType) && r.nb <= produit)
 		{
 			produit-=r.nb;
-			System.out.println("ressource apres demande "+produit);
 			return true;
 		}
 		else
@@ -122,7 +121,7 @@ public class ProducteurImpl extends ProducteurPOA
 		System.out.println("Prod");
 	}
 
-	public void production()
+	public synchronized void production()
 	{
 		produit+=(nbRessource/2)+1;
 		System.out.println("Produit apres production :"+produit);
