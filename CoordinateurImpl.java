@@ -474,7 +474,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 				System.out.print((i+1)+") "+coord.classement[i]);
 				if(coord.modeEval == 0)
 				{
-					System.out.print(" Nb ressource "+ coord.nbRessourceParJoueur.get(new Integer(i)));
+					System.out.print(" Nb ressource "+ coord.nbRessourceParJoueur.get(new Integer(i+1)));
 				}
 				System.out.print("\n");
 			}
