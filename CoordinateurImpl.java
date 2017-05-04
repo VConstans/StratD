@@ -25,6 +25,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	tabRessource[] ressource_joueur_fini;
 	ArrayList<Integer> joueur_fini = new ArrayList<Integer>();
+	Hashtable<Integer,Integer> nbRessourceParJoueur = new Hashtable<Integer,Integer>();
 
 	int[] classement;
 	int positionDernierClassement =0;
@@ -221,6 +222,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void terminaisonCoord()
 	{
+	
+
 		lock.lock();
 		try {
 			terminaison.signal();
@@ -232,7 +235,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void calculClassement()
 	{
-		Hashtable<Integer,Integer> nbRessourceParJoueur = new Hashtable<Integer,Integer>();
+		Hashtable<Integer,Integer> tmp = new Hashtable<Integer,Integer>();
 
 		int i;
 		int somme =0;
@@ -245,17 +248,19 @@ public class CoordinateurImpl extends CoordinateurPOA
 				somme+=entree.getValue().intValue();
 			}
 			nbRessourceParJoueur.put(new Integer(i+1),new Integer(somme));
+			tmp.put(new Integer(i+1),new Integer(somme));
 			somme=0;
 		}
 
 		//TODO copier si on veut grader les totaux des ressources
+
 
 		int max = 0;
 		int idMax = 0;
 
 		for(i=0;i<list_joueur.size();i++)
 		{
-			for(Map.Entry<Integer,Integer> entree : (nbRessourceParJoueur.entrySet()))
+			for(Map.Entry<Integer,Integer> entree : (tmp.entrySet()))
 			{
 				if(entree.getValue().intValue() >= max)
 				{
@@ -265,8 +270,14 @@ public class CoordinateurImpl extends CoordinateurPOA
 			}
 
 			classement[i]=idMax;
-			nbRessourceParJoueur.remove(new Integer(idMax));
+			tmp.remove(new Integer(idMax));
 		}
+
+
+		System.out.println("Classement:");
+
+
+
 
 	}
 
@@ -455,14 +466,22 @@ public class CoordinateurImpl extends CoordinateurPOA
 			}
 
 			System.out.println("Fin du jeu");
-			System.out.println("Classement:");
 
 			int i;
 
 			for(i=0;i<coord.classement.length;i++)
 			{
-				System.out.println((i+1)+") "+coord.classement[i]);
+				System.out.print((i+1)+") "+coord.classement[i]);
+				if(coord.modeEval == 0)
+				{
+					System.out.print(" Nb ressource "+ coord.nbRessourceParJoueur.get(new Integer(i)));
+				}
+				System.out.print("\n");
 			}
+
+
+
+
 
 		}
 		catch (Exception e)
