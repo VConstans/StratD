@@ -174,7 +174,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 			}
 			terminaisonJoueur();
 			terminaisonProd();
-			System.out.println("Terminaison");
+			terminaisonCoord();
 		}
 	}
 
@@ -196,6 +196,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 		for(i=0;i<list_prod.size();i++)
 		{
 			list_prod.get(i).terminaison();
+		}
+	}
+
+	private void terminaisonCoord()
+	{
+		lock.lock();
+		try {
+			terminaison.signal();
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -428,12 +438,27 @@ public class CoordinateurImpl extends CoordinateurPOA
 			coord.lock.unlock();
 			}
 
-			System.out.println("après");
+			System.out.println("Préparation du jeu");
 
 			coord.preparationJeu();
 
 
-			thread.join();
+			coord.lock.lock();
+			try{
+				coord.terminaison.await();
+			} finally {
+				coord.lock.unlock();
+			}
+
+			System.out.println("Fin du jeu");
+			System.out.println("Classement:");
+
+			int i;
+
+			for(i=0;i<coord.classement.length;i++)
+			{
+				System.out.println((i+1)+") "+coord.classement[i]);
+			}
 
 		}
 		catch (Exception e)
@@ -441,7 +466,9 @@ public class CoordinateurImpl extends CoordinateurPOA
 			System.err.println("ERROR: " + e) ;
 			e.printStackTrace(System.out) ;
 		}
-      
-		System.out.println("Coordinateur Exiting ...") ;
+		finally {
+			System.out.println("Coordinateur Exiting ...") ;
+			System.exit(0);
+		}
 	}
 }
