@@ -33,6 +33,7 @@ module StratD
 	typedef sequence<Producteur> tabProducteur;
 	typedef sequence<string> tabRessource;
 	typedef sequence<Ressource> tabBesoin;
+	typedef sequence<Transaction> tabTransaction;
 
 
 	interface Joueur
@@ -46,7 +47,8 @@ module StratD
 		void donneTour();
 		long estVole(in Ressource r);
 		void observe(in long idProd, in Ressource r);
-		oneway void finDePartie();
+		void arretJoueur();
+		void terminaison();
 	};
 
 
@@ -56,7 +58,9 @@ module StratD
 		long ajoutProd(in Producteur p, in string ressourceType);
 		void ping(in long id);
 		void finTour();
-		void finJoueur(in long id);
+		void finJoueur(in long id, in tabTransaction tabTransaction);
+		void signalJoueurStopper();
+		void recuperationRessourceJoueur(in long id,in string r, in long nb);
 	};
 
 };

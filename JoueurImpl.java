@@ -41,9 +41,14 @@ public class JoueurImpl extends JoueurPOA
 
 	boolean RbR = false;
 
+	boolean fini = false;
+
 	Lock tour = new ReentrantLock();
 	Condition entrerTour = tour.newCondition();
 	Condition finTour = tour.newCondition();
+
+	Lock lock = new ReentrantLock();
+	Condition terminaison = lock.newCondition();
 	
 
 
@@ -73,6 +78,11 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized public int estVole(Ressource r)
 	{
+		if(fini)
+		{
+			return 0;
+		}
+
 		if(protege)
 		{
 			System.out.println("Voleur vu");
@@ -149,9 +159,10 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void finDePartie()
+	public void arretJoueur()
 	{
-		System.out.println("Fin de partie");
+		//TODO inutile si juste un appel
+		finPartie();
 	}
 
 
@@ -162,6 +173,17 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
+	public void terminaison()
+	{
+		lock.lock();
+		try{
+			terminaison.signal();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+
 	public void gameLoop()
 	{
 		//System.out.println("Game loop");
@@ -169,7 +191,7 @@ public class JoueurImpl extends JoueurPOA
 		commenceObservation();
 
 
-		while(!verifRessource())
+		while(!verifRessource() && !fini)
 		{
 			if(RbR)
 			{
@@ -185,9 +207,39 @@ public class JoueurImpl extends JoueurPOA
 		}
 		finObservation();
 
-		coord.finJoueur(id);
-
+		finPartie();
 	}
+
+
+	private void finPartie()
+	{
+		if(!fini)
+		{
+			fini = true;
+			Transaction[] transacTmp= new Transaction[listTransaction.size()];
+			transacTmp = listTransaction.toArray(transacTmp);
+			coord.finJoueur(id, transacTmp);
+			envoieRessource();
+			stopJoueur();
+		}
+	}
+
+
+	private void stopJoueur()
+	{
+		coord.signalJoueurStopper();
+		//TODO arret orb et fin programme
+	}
+
+
+	private void envoieRessource()
+	{
+		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
+		{
+			coord.recuperationRessourceJoueur(id,entree.getKey(),entree.getValue());
+		}
+	}
+
 
 	private void prendTour()// throws InterruptedException
 	{
@@ -407,7 +459,16 @@ public class JoueurImpl extends JoueurPOA
 
 			joueur.connection();
 
-			joueur.thread.join();
+			//joueur.thread.join();
+			joueur.lock.lock();
+			try{
+				joueur.terminaison.await();
+			} finally {
+			joueur.lock.unlock();
+			}
+
+			System.out.println("Fin");
+			
 		//	prod.loop() ;
 		}
 		catch (Exception e)

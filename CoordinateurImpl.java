@@ -11,6 +11,7 @@ import StratD.Joueur;
 import StratD.Producteur;
 import StratD.ProducteurPOA;
 import StratD.CoordinateurHelper;
+import StratD.Transaction;
 
 public class CoordinateurImpl extends CoordinateurPOA
 {
@@ -20,9 +21,15 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	HashSet<String> list_ressource = new HashSet<String>();
 
-	ArrayList<Ressource> list_besoin = new ArrayList();
+	ArrayList<Ressource> list_besoin = new ArrayList<Ressource>();
 
-	Hashtable<Integer,Integer> joueur_fini = new Hashtable<Integer,Integer>();
+	tabRessource[] ressource_joueur_fini;
+	ArrayList<Integer> joueur_fini = new ArrayList<Integer>();
+
+	int[] classement;
+	int joueurStopper = 0;
+
+	ArrayList<Transaction> listTransaction = new ArrayList<Transaction>();
 
 
 	int maxJoueur;
@@ -121,9 +128,17 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
-	public void finJoueur(int id)
+	public void finJoueur(int id, Transaction[] tabTransaction)
 	{
-		joueur_fini.put(new Integer(id),new Integer(joueur_fini.size()+1));
+		//TODO faire classement en fct du mode de jeu
+		if(modeDeFin == 1)
+		{
+			classement[id-1] = maxTab(classement) + 1;
+		}
+
+		joueur_fini.add(new Integer(id));
+		
+		//TODO ajouter transaction dans tableau
 
 		if((modeDeFin == 1 && joueur_fini.size() == 1) || modeDeFin == 2 && joueur_fini.size() == list_joueur.size())
 		{
@@ -131,20 +146,103 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			for(i=0;i<list_joueur.size();i++)
 			{
-				finDePartie();
+				list_joueur.get(i).arretJoueur();
 			}
 		}
 	}
 
 
-	private void finDePartie()
+	public void recuperationRessourceJoueur(int id, String r, int nb)
+	{
+		if(ressource_joueur_fini[id-1] == null)
+			System.out.println("====================================> null");
+		ressource_joueur_fini[id -1].put(r,nb);
+	}
+
+
+	public void signalJoueurStopper()
+	{
+		joueurStopper+=1;
+
+		if(joueurStopper == list_joueur.size())
+		{
+			//TODO afficher classement et arreter programme
+			if(modeDeFin == 2)
+			{
+				calculClassement();
+			}
+			terminaisonJoueur();
+			System.out.println("Terminaison");
+		}
+	}
+
+
+	private void terminaisonJoueur()
 	{
 		int i;
 
 		for(i=0;i<list_joueur.size();i++)
 		{
-			list_joueur.get(i).finDePartie();
-		}	
+			list_joueur.get(i).terminaison();
+		}
+	}
+
+
+	private void calculClassement()
+	{
+		Hashtable<Integer,Integer> nbRessourceParJoueur = new Hashtable<Integer,Integer>();
+
+		int i;
+		int somme =0;
+
+		for(i=0; i<list_joueur.size();i++)
+		{
+			for(Map.Entry<String,Integer> entree : ((ressource_joueur_fini[i].getTab()).entrySet()))
+			{
+				//TODO
+				somme+=entree.getValue().intValue();
+			}
+			nbRessourceParJoueur.put(new Integer(i+1),new Integer(somme));
+			somme=0;
+		}
+
+		//TODO copier si on veut grader les totaux des ressources
+
+		int max = 0;
+		int idMax = 0;
+
+		for(i=0;i<list_joueur.size();i++)
+		{
+			for(Map.Entry<Integer,Integer> entree : (nbRessourceParJoueur.entrySet()))
+			{
+				if(entree.getValue().intValue() >= max)
+				{
+					max = entree.getValue().intValue();
+					idMax = entree.getKey().intValue();
+				}
+			}
+
+			classement[i]=idMax;
+			nbRessourceParJoueur.remove(new Integer(idMax));
+		}
+
+	}
+
+
+	private int maxTab(int [] t)
+	{
+		int i;
+		int max = 0;
+
+		for(i=0;i<t.length;i++)
+		{
+			if(t[i] > max)
+			{
+				max = t[i];
+			}
+		}
+
+		return max;
 	}
 
 	private void commenceTour()// throws InterruptedException
@@ -241,7 +339,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		{
 			for(i=0;i<list_joueur.size();i++)
 			{
-				if(!joueur_fini.containsKey(new Integer(i+1)))
+				if(!joueur_fini.contains(new Integer(i+1)))
 				{
 					commenceTour();
 					list_joueur.get(i).donneTour();
@@ -259,6 +357,15 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void preparationJeu()
 	{
+		classement = new int[list_joueur.size()];
+
+		ressource_joueur_fini = new tabRessource[list_joueur.size()];
+
+		int i;
+		for(i=0; i<ressource_joueur_fini.length;i++)
+		{
+			ressource_joueur_fini[i]=new tabRessource();
+		}
 
 		sendList();
 

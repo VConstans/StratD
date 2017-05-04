@@ -2,7 +2,12 @@ import java.util.*;
 
 public class tabRessource{
 
-	private Hashtable<String,Integer> ressource = new Hashtable<String,Integer>();
+	private Hashtable<String,Integer> ressource;
+
+	public tabRessource()
+	{
+		ressource = new Hashtable<String,Integer>();
+	}
 
 	public int get(String key)
 	{
