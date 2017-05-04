@@ -186,7 +186,6 @@ public class JoueurImpl extends JoueurPOA
 
 	public void gameLoop()
 	{
-		//System.out.println("Game loop");
 
 		commenceObservation();
 
@@ -197,7 +196,7 @@ public class JoueurImpl extends JoueurPOA
 			{
 				prendTour();
 			}
-
+			String ressourceCritique = ressourceARechercher();
 			demandeRessource(0,new Ressource("petrole",1));
 
 			if(RbR)
@@ -208,6 +207,26 @@ public class JoueurImpl extends JoueurPOA
 		finObservation();
 
 		finPartie();
+	}
+
+
+	private String ressourceARechercher()
+	{
+		int max = 0;
+		String recherche = null;
+
+		for(String r : ressourceEnJeu)
+		{
+			int delta = besoin.get(r) - ressource.get(r);
+
+			if(delta > max)
+			{
+				max = delta;
+				recherche = r;
+			}
+		}
+
+		return recherche;
 	}
 
 
