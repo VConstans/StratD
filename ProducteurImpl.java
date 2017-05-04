@@ -34,6 +34,10 @@ public class ProducteurImpl extends ProducteurPOA
 	Condition entrerTour = tour.newCondition();
 	Condition finTour = tour.newCondition();
 
+
+	Lock lock = new ReentrantLock();
+	Condition terminaison = lock.newCondition();
+
 	boolean mon_tour = true;
 
 	public ProducteurImpl(String type,int nb)
@@ -155,6 +159,18 @@ public class ProducteurImpl extends ProducteurPOA
 	}
 
 
+
+	public void terminaison()
+	{
+		lock.lock();
+		try {
+			terminaison.signal();
+		} finally {
+			lock.unlock();
+		}
+	}
+
+
 	private void connection()
 	{
 		id = coord.ajoutProd(producteur, ressourceType);
@@ -206,7 +222,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 			// obtenir reference sur l'objet distant
 			prod.coord = CoordinateurHelper.narrow(obj) ;
-			if (prod.producteur == null)
+			if (prod.coord == null)
 			{
 				System.out.println("Pb pour contacter le serveur") ;
 				System.exit(1) ;
@@ -217,11 +233,16 @@ public class ProducteurImpl extends ProducteurPOA
 			// lancer l'ORB dans un thread
 			prod.thread = new ThreadRun(orb) ;
 			prod.thread.start() ;
-		//	orb.run();
-	//		prod.coord.ping(1000);
 			prod.connection();
-			prod.thread.join();
-		//	prod.loop() ;
+
+			prod.lock.lock();
+			try {
+				prod.terminaison.await();
+			} finally {
+				prod.lock.unlock();
+			}
+
+			System.out.println("Fin");
 		}
 		catch (Exception e)
 		{
@@ -231,8 +252,10 @@ public class ProducteurImpl extends ProducteurPOA
 		finally
 		{
 			// shutdown
-			if (prod != null)
-			prod.thread.shutdown() ;
+		//	if (prod != null)
+		//	prod.thread.shutdown() ;
+
+			System.exit(0);
 		}
 	}
 	

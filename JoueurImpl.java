@@ -445,7 +445,7 @@ public class JoueurImpl extends JoueurPOA
 
 			// obtenir reference sur l'objet distant
 			joueur.coord = CoordinateurHelper.narrow(obj) ;
-			if (joueur.player == null)
+			if (joueur.coord == null)
 			{
 				System.out.println("Pb pour contacter le serveur") ;
 				System.exit(1) ;
@@ -479,8 +479,9 @@ public class JoueurImpl extends JoueurPOA
 		finally
 		{
 			// shutdown
-			if (joueur != null)
-			joueur.thread.shutdown() ;
+	//		if (joueur != null)
+		//	joueur.thread.shutdown() ;
+			System.exit(0);
 		}
 	}
 	

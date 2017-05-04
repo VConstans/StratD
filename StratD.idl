@@ -27,6 +27,7 @@ module StratD
 		void annonce();
 		oneway void lancementProduction();
 		void donneTour();
+		void terminaison();
 	};
 
 

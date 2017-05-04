@@ -41,6 +41,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	Lock lock = new ReentrantLock();
 	Condition demarrage = lock.newCondition();
+	Condition terminaison = lock.newCondition();
 
 	Lock tour = new ReentrantLock();
 	Condition entrerTour = tour.newCondition();
@@ -172,6 +173,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 				calculClassement();
 			}
 			terminaisonJoueur();
+			terminaisonProd();
 			System.out.println("Terminaison");
 		}
 	}
@@ -184,6 +186,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 		for(i=0;i<list_joueur.size();i++)
 		{
 			list_joueur.get(i).terminaison();
+		}
+	}
+
+	private void terminaisonProd()
+	{
+		int i;
+
+		for(i=0;i<list_prod.size();i++)
+		{
+			list_prod.get(i).terminaison();
 		}
 	}
 
