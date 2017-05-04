@@ -27,6 +27,9 @@ public class CoordinateurImpl extends CoordinateurPOA
 	ArrayList<Integer> joueur_fini = new ArrayList<Integer>();
 
 	int[] classement;
+	int positionDernierClassement =0;
+
+
 	int joueurStopper = 0;
 
 	ArrayList<Transaction> listTransaction = new ArrayList<Transaction>();
@@ -38,6 +41,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	boolean RbR=false;
 	int modeDeFin;
+	int modeEval;
 
 	Lock lock = new ReentrantLock();
 	Condition demarrage = lock.newCondition();
@@ -50,11 +54,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 	boolean tourEnCours = false;
 
 
-	public CoordinateurImpl(String s,String mdf,int maxJ, int maxP)
+	public CoordinateurImpl(String s,String mdf,String me, int maxJ, int maxP)
 	{
-		System.out.println(s);
 		maxJoueur=maxJ;
 		maxProd=maxP;
+
+		if(s.equals("R"))
+		{
+			RbR=true;
+		}
+
 
 		if(mdf.equals("A"))
 		{
@@ -63,6 +72,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 		else if(mdf.equals("F"))
 		{
 			modeDeFin=1;
+		}
+
+
+		if(me.equals("P"))
+		{
+			modeEval=1;
+		}
+		else if(me.equals("R"))
+		{
+			modeEval=0;
 		}
 	}
 
@@ -129,12 +148,13 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
-	public void finJoueur(int id, Transaction[] tabTransaction)
+	synchronized public void finJoueur(int id, Transaction[] tabTransaction)
 	{
 		//TODO faire classement en fct du mode de jeu
-		if(modeDeFin == 1)
+		if(modeEval == 1)
 		{
-			classement[id-1] = maxTab(classement) + 1;
+			classement[positionDernierClassement] = id;
+			positionDernierClassement+=1;
 		}
 
 		joueur_fini.add(new Integer(id));
@@ -168,7 +188,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 		if(joueurStopper == list_joueur.size())
 		{
 			//TODO afficher classement et arreter programme
-			if(modeDeFin == 2)
+			if(modeEval == 0)
 			{
 				calculClassement();
 			}
@@ -250,22 +270,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	}
 
-
-	private int maxTab(int [] t)
-	{
-		int i;
-		int max = 0;
-
-		for(i=0;i<t.length;i++)
-		{
-			if(t[i] > max)
-			{
-				max = t[i];
-			}
-		}
-
-		return max;
-	}
 
 	private void commenceTour()// throws InterruptedException
 	{
@@ -402,16 +406,16 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public static void main(String args[])
 	{
-		if (args.length != 6)
+		if (args.length != 7)
 		{
-			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <R>" + " nb de joueur" + " nb de prod" + "mode de fin: F/A") ;
+			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <mode de jeu: L/R> " + "<mode de fin: F/A>"+ " mode d'évaluation: P/R "+ " nb de joueur" + " nb de prod" ) ;
 			return ;
 		}
 		try
 		{
 			String [] argv = {"-ORBInitialHost", args[0], "-ORBInitialPort", args[1]} ; 
 			ORB orb = ORB.init(argv, null) ;
-			CoordinateurImpl coord = new CoordinateurImpl(args[2],args[3],Integer.parseInt(args[4]),Integer.parseInt(args[5])) ;
+			CoordinateurImpl coord = new CoordinateurImpl(args[2],args[3],args[4],Integer.parseInt(args[5]),Integer.parseInt(args[6])) ;
 
 			// init POA
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA")) ;
