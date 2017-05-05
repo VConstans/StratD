@@ -47,6 +47,8 @@ public class JoueurImpl extends JoueurPOA
 
 	boolean fini = false;
 
+	boolean observe =false;
+
 	Lock tour = new ReentrantLock();
 	Condition entrerTour = tour.newCondition();
 	Condition finTour = tour.newCondition();
@@ -183,6 +185,17 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
+	private void commenceProtection()
+	{
+		protege = true;
+	}
+
+	private void finProtection()
+	{
+		protege = false;
+	}
+
+
 	synchronized private void penaliseVole(int transaction)
 	{
 		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
@@ -222,6 +235,7 @@ public class JoueurImpl extends JoueurPOA
 
 			if(humain)
 			{
+				afficheRessource();
 				try {
 					commandeHumain();
 				} catch (Exception e) {e.printStackTrace();}
@@ -295,6 +309,17 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
+	private void afficheRessource()
+	{
+		System.out.println("Tableau des ressources\n\n");
+
+		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
+		{
+			System.out.println(entree.getKey()+ " : " + entree.getValue());
+		}
+		System.out.println("\n\n");
+	}
+
 	private void commandeHumain() throws IOException
 	{
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -309,8 +334,33 @@ public class JoueurImpl extends JoueurPOA
 			switch (args[0])
 			{
 				case "demande":
-					System.out.println("Prend");
+					demandeRessource(Integer.parseInt(args[1]),new Ressource(args[2],Integer.parseInt(args[3])));
 					commande_valide = true;
+					break;
+				case "vole":
+					vole(Integer.parseInt(args[1]),new Ressource(args[2],Integer.parseInt(args[3])));
+					commande_valide = true;
+					break;
+				case "observe":
+					commenceObservation();
+					commande_valide = true;
+					break;
+				case "arretObserve":
+					finObservation();
+					commande_valide = true;
+					break;
+				case "protege":
+					commenceProtection();
+					commande_valide = true;
+					break;
+				case "arretProtege":
+					finProtection();
+					commande_valide = true;
+					break;
+				default:
+					System.out.println("Commande invalide");
+
+
 			}
 		}
 	}
@@ -443,6 +493,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void commenceObservation()
 	{
+		observe = true;
 		
 		//System.out.println(id+") observe");
 		int i;
@@ -457,6 +508,8 @@ public class JoueurImpl extends JoueurPOA
 
 	private void finObservation()
 	{
+		observe = false;
+
 		//System.out.println(id+") arrete observe");
 		int i;
 
