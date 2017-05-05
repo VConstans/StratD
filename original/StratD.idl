@@ -1,0 +1,67 @@
+module StratD
+{
+
+	struct Ressource
+	{
+		string type;
+		long nb;
+	};
+
+
+	struct Transaction
+	{
+		long long timeStamp;
+		long emetteur;
+		long recepteur;
+		Ressource ressource;
+		boolean vole;
+		boolean penalise;
+	};
+
+
+	interface Producteur
+	{
+		void rcvParametreJeu(in boolean RbR);
+		boolean demandeRessource(in Ressource r);
+		Ressource sondeProd();
+		void annonce();
+		oneway void lancementProduction();
+		void donneTour();
+		void terminaison();
+	};
+
+
+	typedef sequence<Producteur> tabProducteur;
+	typedef sequence<string> tabRessource;
+	typedef sequence<Ressource> tabBesoin;
+	typedef sequence<Transaction> tabTransaction;
+
+
+	interface Joueur
+	{
+		typedef sequence<Joueur> tabJoueur;
+
+		void rcvParametreJeu(in tabJoueur joueur, in tabProducteur prod, in tabRessource ressource, in tabBesoin besoin, in boolean RbR);
+		void ajoutObservateur(in Joueur j);
+		void suppObservateur(in Joueur j);
+		oneway void gameLoop();
+		void donneTour();
+		long estVole(in Ressource r);
+		void observe(in long idProd, in Ressource r);
+		void arretJoueur();
+		void terminaison();
+	};
+
+
+	interface Coordinateur
+	{
+		long ajoutJoueur(in Joueur j);
+		long ajoutProd(in Producteur p, in string ressourceType);
+		void ping(in long id);
+		void finTour();
+		void finJoueur(in long id, in tabTransaction tabTransaction);
+		void signalJoueurStopper();
+		void recuperationRessourceJoueur(in long id,in string r, in long nb);
+	};
+
+};

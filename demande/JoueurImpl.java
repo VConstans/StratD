@@ -218,7 +218,7 @@ public class JoueurImpl extends JoueurPOA
 			}
 
 
-			if(humain)
+/*			if(humain)
 			{
 				try {
 					commandeHumain();
@@ -272,15 +272,15 @@ public class JoueurImpl extends JoueurPOA
 					prendTour();
 				}
 				demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte));
-
+*/
 				demandeRessource(1,new Ressource("petrole",1));
-
+/*
 			}
 			if(RbR)
 			{
 				coord.finTour();
 			}
-
+*/
 		}
 //		finObservation();
 
