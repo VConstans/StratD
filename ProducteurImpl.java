@@ -50,7 +50,7 @@ public class ProducteurImpl extends ProducteurPOA
 	}
 
 
-	public void donneTour()// throws InterruptedException
+	public void donneTour()
 	{
 		try
 		{
@@ -118,7 +118,7 @@ public class ProducteurImpl extends ProducteurPOA
 		}
 	}
 
-	public Ressource sondeProd()
+	synchronized public Ressource sondeProd()
 	{
 		return new Ressource(ressourceType,nbRessource);
 	}
@@ -130,10 +130,13 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public synchronized void production()
 	{
-		int production = (nbRessource/2)+1;
-		nbRessource -= production;
-		produit+=production;
-		System.out.println("Produit apres production :"+produit);
+		if(nbRessource >0)
+		{
+			int production = (nbRessource/2)+1;
+			nbRessource -= production;
+			produit+=production;
+			System.out.println("Produit apres production :"+produit);
+		}
 	}
 
 	public void lancementProduction()

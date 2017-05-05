@@ -160,7 +160,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 		joueur_fini.add(new Integer(id));
 		
-		//TODO ajouter transaction dans tableau
+		traitementTransaction(tabTransaction);
 
 		if((modeDeFin == 1 && joueur_fini.size() == 1) || modeDeFin == 2 && joueur_fini.size() == list_joueur.size())
 		{
@@ -170,6 +170,15 @@ public class CoordinateurImpl extends CoordinateurPOA
 			{
 				list_joueur.get(i).arretJoueur();
 			}
+		}
+	}
+
+	private void traitementTransaction(Transaction[] tab)
+	{
+		int i;
+		for(i=0;i<tab.length;i++)
+		{
+			System.out.println(tab[i].timeStamp+","+tab[i].emetteur+","+tab[i].recepteur+","+tab[i].ressource.type+","+tab[i].ressource.nb+","+tab[i].vole+","+tab[i].penalise);
 		}
 	}
 

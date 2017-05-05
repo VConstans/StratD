@@ -41,6 +41,8 @@ public class JoueurImpl extends JoueurPOA
 
 	boolean RbR = false;
 
+	boolean humain =false;
+
 	boolean fini = false;
 
 	Lock tour = new ReentrantLock();
@@ -50,6 +52,14 @@ public class JoueurImpl extends JoueurPOA
 	Lock lock = new ReentrantLock();
 	Condition terminaison = lock.newCondition();
 	
+
+	public JoueurImpl(String p)
+	{
+		if(p.equals("H"))
+		{
+			humain = true;
+		}
+	}
 
 
 	public void donneTour()// throws InterruptedException
@@ -132,6 +142,11 @@ public class JoueurImpl extends JoueurPOA
 
 		this.RbR = RbR;
 
+		if(humain && !RbR)
+		{
+			System.out.println("Erreur, un joueur humain est présent, le jeu doit être en tour par tour");
+		}
+
 	}
 
 
@@ -154,7 +169,6 @@ public class JoueurImpl extends JoueurPOA
 
 	public void observe(int idProd,Ressource r)
 	{
-		//TODO if observe
 		//TODO supprimer methode et appeler direct apprentissage si elle reste vide
 		apprentissageRessource(idProd,r);
 	}
@@ -198,61 +212,95 @@ public class JoueurImpl extends JoueurPOA
 				prendTour();
 			}
 
-			String ressourceCritique = ressourceARechercher();
-			int prodTrouver = rechercheProducteur(ressourceCritique);
-			int qte; //TODO valeur
 
-			if(prodTrouver == -1)
+			if(humain)
 			{
-				int prod_a_sonder;
-				Ressource ressource_prod_sonder;
+				try {
+					commandeHumain();
+				} catch (Exception e) {System.out.println("erreur");}
+			}
+			else
+			{
 
-				prod_a_sonder = choixProdSonder();
-				ressource_prod_sonder=sondeProd(prod_a_sonder);
+				String ressourceCritique = ressourceARechercher();
+				int prodTrouver = rechercheProducteur(ressourceCritique);
+				int qte;
 
-				while(!ressourceCritique.equals(ressource_prod_sonder.type));
+				if(prodTrouver == -1)
 				{
-					
-					if(RbR)
-					{
-						coord.finTour();
-						prendTour();
-					}
+					int prod_a_sonder;
+					Ressource ressource_prod_sonder;
 
 					prod_a_sonder = choixProdSonder();
 					ressource_prod_sonder=sondeProd(prod_a_sonder);
 
+					while(!ressourceCritique.equals(ressource_prod_sonder.type));
+					{
+						
+						if(RbR)
+						{
+							coord.finTour();
+							prendTour();
+						}
+
+						prod_a_sonder = choixProdSonder();
+						ressource_prod_sonder=sondeProd(prod_a_sonder);
+
+					}
+
+					apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
+
+					
+
+					prodTrouver = prod_a_sonder;
+					qte = ressource_prod_sonder.nb;
+				}
+				else
+				{
+					Ressource ressource_prod_sonder=sondeProd(prodTrouver);
+					qte = ressource_prod_sonder.nb;
 				}
 
-				apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
+				if(RbR)
+				{
+					coord.finTour();
+					prendTour();
+				}
+				demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte));
 
-				
+				demandeRessource(1,new Ressource("petrole",1));
 
-				prodTrouver = prod_a_sonder;
-				qte = ressource_prod_sonder.nb;
 			}
-			else
-			{
-				Ressource ressource_prod_sonder=sondeProd(prodTrouver);
-				qte = ressource_prod_sonder.nb;
-			}
-
-			if(RbR)
-			{
-				coord.finTour();
-				prendTour();
-			}
-
-			demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte-5));
-
 			if(RbR)
 			{
 				coord.finTour();
 			}
+
 		}
 //		finObservation();
 
 		finPartie();
+	}
+
+
+	private void commandeHumain() throws IOException
+	{
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		String commande = null;
+		boolean commande_valide = false;
+	 
+		while (!commande_valide)
+		{
+			commande = in.readLine();
+			String[] args = commande.split(" ");
+	 
+			switch (args[0])
+			{
+				case "demande":
+					System.out.println("Prend");
+					commande_valide = true;
+			}
+		}
 	}
 
 
@@ -269,7 +317,6 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	//Return the id
 	private int rechercheProducteur(String ressourceRechercher)
 	{
 		int i;
@@ -404,9 +451,11 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized private void demandeRessource(int p,Ressource r)
 	{
+		if(r.nb < 0) System.out.println("=================================================================================================>");
 
 		if(list_prod[p-1].demandeRessource(r))
 		{
+			System.out.println("demande accordé");
 
 			if(!ressource.containsKey(r.type))
 			{
@@ -422,7 +471,7 @@ public class JoueurImpl extends JoueurPOA
 		}
 		else
 		{
-			System.out.println("Demande impossible");
+//			System.out.println("Demande impossible");
 		}
 	}
 
@@ -488,9 +537,12 @@ public class JoueurImpl extends JoueurPOA
 
 	private boolean verifRessource()
 	{
+//		System.out.println("=================================");
 		int i;
 		for(Map.Entry<String,Integer> entree : ((besoin.getTab()).entrySet()))
 		{
+//			System.out.println("Besoin "+entree.getValue()+" Possede "+ressource.get(entree.getKey()));
+			
 			if(ressource.get(entree.getKey()) < entree.getValue())
 			{
 				return false;
@@ -513,9 +565,9 @@ public class JoueurImpl extends JoueurPOA
 	{
 		JoueurImpl joueur = null ;
 
-		if (args.length != 2)
+		if (args.length != 3)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>") ;
+			System.out.println("Usage : java JoueurImpl" + " <machineServeurDeNoms>" + " <No Port>"+ "<Humain: H/M>") ;
 			return ;
 		}
 		try
@@ -529,7 +581,7 @@ public class JoueurImpl extends JoueurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			joueur = new JoueurImpl() ;
+			joueur = new JoueurImpl(args[2]) ;
 
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
