@@ -42,6 +42,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public ProducteurImpl(String type,int nb)
 	{
+		System.out.println(type);
 		ressourceType=type;
 		nbRessource=nb;
 		produit=0;

@@ -255,22 +255,25 @@ public class JoueurImpl extends JoueurPOA
 
 					prod_a_sonder = choixProdSonder();
 					ressource_prod_sonder=sondeProd(prod_a_sonder);
+						System.out.println("dans le if avant while"+ressourceCritique);
 
-					while(!ressourceCritique.equals(ressource_prod_sonder.type));
+					while(!ressourceCritique.equals(ressource_prod_sonder.type))
 					{
-				System.out.println(prodTrouver);
 						
 						if(RbR)
 						{
+							System.out.println("Dans RBR");
 							coord.finTour();
 							prendTour();
 						}
 
+						System.out.println("va sonder pour connaitre"+ressourceCritique);
 						prod_a_sonder = choixProdSonder();
 						ressource_prod_sonder=sondeProd(prod_a_sonder);
 
 					}
 
+						System.out.println("dans le if apres while"+ressourceCritique);
 					apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
 
 					
@@ -282,6 +285,7 @@ public class JoueurImpl extends JoueurPOA
 				}
 				else
 				{
+						System.out.println("dans le else"+ressourceCritique);
 					Ressource ressource_prod_sonder=sondeProd(prodTrouver);
 					qte = ressource_prod_sonder.nb;
 				}
@@ -291,7 +295,8 @@ public class JoueurImpl extends JoueurPOA
 					coord.finTour();
 					prendTour();
 				}
-				System.out.println("==================================> "+prodTrouver+" ressource "+ressourceCritique+" qte "+qte);
+				if(qte!=0)
+					System.out.println("id "+id+" ==================================> "+prodTrouver+" ressource "+ressourceCritique+" qte "+qte);
 				demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte));
 
 //				demandeRessource(1,new Ressource("petrole",1));
