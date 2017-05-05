@@ -460,6 +460,7 @@ public class JoueurImpl extends JoueurPOA
 
 	private void envoieRessource()
 	{
+		System.out.println("Envoie des ressources");
 		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
 		{
 			coord.recuperationRessourceJoueur(id,entree.getKey(),entree.getValue());

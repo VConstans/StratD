@@ -232,7 +232,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 	private void terminaisonCoord()
 	{
 	
-
+		System.out.println("UNLOCK");
 		lock.lock();
 		try {
 			terminaison.signal();
@@ -415,7 +415,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 			}
 
 		}
-		System.out.println("fin boucle");
+
+		
 	}
 
 	private void preparationJeu()
