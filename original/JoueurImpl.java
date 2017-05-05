@@ -244,7 +244,6 @@ public class JoueurImpl extends JoueurPOA
 			{
 
 				String ressourceCritique = ressourceARechercher();
-				System.out.println(ressourceCritique);
 				int prodTrouver = rechercheProducteur(ressourceCritique);
 				int qte;
 
@@ -255,25 +254,21 @@ public class JoueurImpl extends JoueurPOA
 
 					prod_a_sonder = choixProdSonder();
 					ressource_prod_sonder=sondeProd(prod_a_sonder);
-						System.out.println("dans le if avant while"+ressourceCritique);
 
 					while(!ressourceCritique.equals(ressource_prod_sonder.type))
 					{
 						
 						if(RbR)
 						{
-							System.out.println("Dans RBR");
 							coord.finTour();
 							prendTour();
 						}
 
-						System.out.println("va sonder pour connaitre"+ressourceCritique);
 						prod_a_sonder = choixProdSonder();
 						ressource_prod_sonder=sondeProd(prod_a_sonder);
 
 					}
 
-						System.out.println("dans le if apres while"+ressourceCritique);
 					apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
 
 					
@@ -285,7 +280,6 @@ public class JoueurImpl extends JoueurPOA
 				}
 				else
 				{
-						System.out.println("dans le else"+ressourceCritique);
 					Ressource ressource_prod_sonder=sondeProd(prodTrouver);
 					qte = ressource_prod_sonder.nb;
 				}
@@ -310,6 +304,7 @@ public class JoueurImpl extends JoueurPOA
 		}
 //		finObservation();
 
+		System.out.println("SORT BOUCLE DE JEU");
 		finPartie();
 	}
 
