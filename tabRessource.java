@@ -13,13 +13,13 @@ public class tabRessource{
 	{
 		Integer i = ressource.get(key);
 
-		if(i == null)
+		if(ressource.containsKey(key))
 		{
-			return -1;
+			return i.intValue();
 		}
 		else
 		{
-			return i.intValue();
+			return 0;
 		}
 	}
 

@@ -331,6 +331,10 @@ public class CoordinateurImpl extends CoordinateurPOA
 		String[] tabRessource = new String[list_ressource.size()];
 		tabRessource = list_ressource.toArray(tabRessource);
 
+
+		generationListeBesoin(tabRessource);
+
+
 		Ressource[] tabBesoin = new Ressource[list_besoin.size()];
 		tabBesoin = list_besoin.toArray(tabBesoin);
 
@@ -344,6 +348,19 @@ public class CoordinateurImpl extends CoordinateurPOA
 		for(i=0;i<list_prod.size();i++)
 		{
 			list_prod.get(i).rcvParametreJeu(RbR);
+		}
+	}
+
+
+	private void generationListeBesoin(String[] ressource)
+	{
+		int i;
+
+		for(i=0;i<ressource.length;i++)
+		{
+			int besoin = (int)(Math.random()*(float)80);
+			Ressource r = new Ressource(ressource[i],besoin);
+			list_besoin.add(r);
 		}
 	}
 

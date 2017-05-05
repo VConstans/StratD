@@ -33,7 +33,7 @@ public class JoueurImpl extends JoueurPOA
 	String[] ressourceEnJeu;
 
 
-	Ressource[] connaissanceRessource;
+	String[] connaissanceRessource;
 
 	boolean mon_tour = true;
 
@@ -114,7 +114,7 @@ public class JoueurImpl extends JoueurPOA
 	public void rcvParametreJeu(Joueur[] joueur, Producteur[] prod, String[] ressource, Ressource[] tabBesoin, boolean RbR)
 	{
 		list_prod = prod;
-		connaissanceRessource = new Ressource[list_prod.length];
+		connaissanceRessource = new String[list_prod.length];
 
 
 		list_joueur = joueur;
@@ -123,6 +123,7 @@ public class JoueurImpl extends JoueurPOA
 		ressourceEnJeu = ressource;
 
 		int i;
+
 
 		for(i=0;i<tabBesoin.length;i++)
 		{
@@ -187,7 +188,7 @@ public class JoueurImpl extends JoueurPOA
 	public void gameLoop()
 	{
 
-		commenceObservation();
+//		commenceObservation();
 
 
 		while(!verifRessource() && !fini)
@@ -196,19 +197,91 @@ public class JoueurImpl extends JoueurPOA
 			{
 				prendTour();
 			}
+
 			String ressourceCritique = ressourceARechercher();
-			demandeRessource(0,new Ressource("petrole",1));
+			int prodTrouver = rechercheProducteur(ressourceCritique);
+			int qte; //TODO valeur
+
+			if(prodTrouver == -1)
+			{
+				int prod_a_sonder;
+				Ressource ressource_prod_sonder;
+
+				prod_a_sonder = choixProdSonder();
+				ressource_prod_sonder=sondeProd(prod_a_sonder);
+
+				while(!ressourceCritique.equals(ressource_prod_sonder.type));
+				{
+					
+					if(RbR)
+					{
+						coord.finTour();
+						prendTour();
+					}
+
+					prod_a_sonder = choixProdSonder();
+					ressource_prod_sonder=sondeProd(prod_a_sonder);
+
+				}
+
+				apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
+
+				
+
+				prodTrouver = prod_a_sonder;
+				qte = ressource_prod_sonder.nb;
+			}
+			else
+			{
+				Ressource ressource_prod_sonder=sondeProd(prodTrouver);
+				qte = ressource_prod_sonder.nb;
+			}
+
+			if(RbR)
+			{
+				coord.finTour();
+				prendTour();
+			}
+
+			demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte-5));
 
 			if(RbR)
 			{
 				coord.finTour();
 			}
 		}
-		finObservation();
+//		finObservation();
 
 		finPartie();
 	}
 
+
+	private int choixProdSonder()
+	{
+		int max = list_prod.length -1;
+		int genere;
+
+		do{
+			genere=(int)(Math.random()*(float)max);
+		}while(connaissanceRessource[genere] != null && !connaissanceRessource[genere].isEmpty());
+
+		return genere+1;
+	}
+
+
+	//Return the id
+	private int rechercheProducteur(String ressourceRechercher)
+	{
+		int i;
+		for(i=0 ; i<connaissanceRessource.length ; i++)
+		{
+			if(ressourceRechercher.equals(connaissanceRessource[i]))
+			{
+				return i+1;
+			}
+		}
+		return -1;
+	}
 
 	private String ressourceARechercher()
 	{
@@ -217,12 +290,25 @@ public class JoueurImpl extends JoueurPOA
 
 		for(String r : ressourceEnJeu)
 		{
-			int delta = besoin.get(r) - ressource.get(r);
-
-			if(delta > max)
+			if(besoin.containsKey(r))
 			{
-				max = delta;
-				recherche = r;
+				int nbRessource;
+
+				if(ressource.containsKey(r))
+				{
+					nbRessource = ressource.get(r);
+				}
+				else
+				{
+					nbRessource = 0;
+				}
+				int delta = besoin.get(r) - nbRessource;
+
+				if(delta > max)
+				{
+					max = delta;
+					recherche = r;
+				}
 			}
 		}
 
@@ -311,20 +397,18 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void apprentissageRessource(int p, Ressource r)
+	private void apprentissageRessource(int id, Ressource r)
 	{
-		if(connaissanceRessource[p] == null || connaissanceRessource[p].type != r.type)
-		{
-			connaissanceRessource[p]=r;
-		}
+			connaissanceRessource[id-1]=r.type;
 	}
 
 	synchronized private void demandeRessource(int p,Ressource r)
 	{
-		if(list_prod[p].demandeRessource(r))
+
+		if(list_prod[p-1].demandeRessource(r))
 		{
 
-			if(ressource.get(r.type) == -1)
+			if(!ressource.containsKey(r.type))
 			{
 				ressource.put(r.type,r.nb);
 			}
@@ -417,9 +501,9 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void sondeProd(int idProd)
+	private Ressource sondeProd(int idProd)
 	{
-		apprentissageRessource(idProd,list_prod[idProd].sondeProd());
+		return list_prod[idProd-1].sondeProd();
 	}
 
 
@@ -447,8 +531,6 @@ public class JoueurImpl extends JoueurPOA
 			// creer l'objet qui sera appele' depuis le serveur
 			joueur = new JoueurImpl() ;
 
-			joueur.besoin.put("petrole",7);	//TODO Enlever
-			joueur.ressource.put("petrole",3);	//TODO Enlever
 
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(joueur) ;
 			joueur.player = JoueurHelper.narrow(ref) ; 
