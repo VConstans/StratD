@@ -183,6 +183,11 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized private void penaliseVole(int transaction)
 	{
+		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
+		{
+			ressource.put(entree.getKey(),entree.getValue()/2);
+		}
+
 		listTransaction.get(transaction).penalise = true;
 		System.out.println("penalisation vole");
 	}
