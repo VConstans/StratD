@@ -245,55 +245,62 @@ public class JoueurImpl extends JoueurPOA
 
 				String ressourceCritique = ressourceARechercher();
 				int prodTrouver = rechercheProducteur(ressourceCritique);
-				int qte;
 
 				if(prodTrouver == -1)
 				{
 					int prod_a_sonder;
-					Ressource ressource_prod_sonder;
+					prod_a_sonder = choixProdSonder(ressourceCritique);
+					System.out.println("id choisie"+prod_a_sonder);
 
-					prod_a_sonder = choixProdSonder();
-					ressource_prod_sonder=sondeProd(prod_a_sonder);
-
-					while(!ressourceCritique.equals(ressource_prod_sonder.type))
+					if(prod_a_sonder==-1)
 					{
-						
+						int id_joueur_a_voler;
+
+						do {
+							id_joueur_a_voler = (int)(Math.random()*(float)(list_joueur.length -1));
+						} while (id_joueur_a_voler == id-1);
+
+						int qte = (int)(Math.random()*80.0);
+
+						vole(id_joueur_a_voler+1, new Ressource(ressourceCritique,qte));
+					}
+					else
+					{
+
+						Ressource ressource_prod_sonder=sondeProd(prod_a_sonder);
+						System.out.println(ressourceCritique+" "+ressource_prod_sonder.type+" "+ressource_prod_sonder.nb);
+
 						if(RbR)
 						{
 							coord.finTour();
 							prendTour();
 						}
 
-						prod_a_sonder = choixProdSonder();
-						ressource_prod_sonder=sondeProd(prod_a_sonder);
-
+						if(ressource_prod_sonder.nb != 0)
+						{
+							demandeRessource(prod_a_sonder,new Ressource(ressource_prod_sonder.type,ressource_prod_sonder.nb));
+						}
 					}
-
-					apprentissageRessource(prod_a_sonder,ressource_prod_sonder);
-
-					
-
-					prodTrouver = prod_a_sonder;
-					qte = ressource_prod_sonder.nb;
-
 			
 				}
 				else
 				{
 					Ressource ressource_prod_sonder=sondeProd(prodTrouver);
-					qte = ressource_prod_sonder.nb;
-				}
 
-				if(RbR)
-				{
-					coord.finTour();
-					prendTour();
-				}
-				if(qte!=0)
-					System.out.println("id "+id+" ==================================> "+prodTrouver+" ressource "+ressourceCritique+" qte "+qte);
-				demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte));
+					if(RbR)
+					{
+						coord.finTour();
+						prendTour();
+					}
 
-//				demandeRessource(1,new Ressource("petrole",1));
+					int qte = ressource_prod_sonder.nb;
+				
+
+					if(qte!=0)
+					{
+						demandeRessource(prodTrouver,new Ressource(ressourceCritique,qte));
+					}
+				}
 
 			}
 			if(RbR)
@@ -304,7 +311,6 @@ public class JoueurImpl extends JoueurPOA
 		}
 //		finObservation();
 
-		System.out.println("SORT BOUCLE DE JEU");
 		finPartie();
 	}
 
@@ -366,16 +372,33 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private int choixProdSonder()
+	private int choixProdSonder(String ressourceRechercher)
 	{
 		int max = list_prod.length -1;
-		int genere;
 
-		do{
-			genere=(int)(Math.random()*(float)max);
-		}while(connaissanceRessource[genere] != null && !connaissanceRessource[genere].isEmpty());
+		int i;
 
-		return genere+1;
+		for(i=0;i<connaissanceRessource.length;i++)
+		{
+			if(connaissanceRessource[i] == null || connaissanceRessource[i].isEmpty())
+			{
+				Ressource r = sondeProd(i+1);
+
+				apprentissageRessource(i+1,r);
+
+				if(RbR)
+				{
+					coord.finTour();
+					prendTour();
+				}
+
+				if(r.type.equals(ressourceRechercher))
+				{
+					return i+1;
+				}
+			}
+		}
+		return -1;
 	}
 
 
@@ -529,11 +552,11 @@ public class JoueurImpl extends JoueurPOA
 
 	synchronized private void demandeRessource(int p,Ressource r)
 	{
-		if(r.nb < 0) System.out.println("=================================================================================================>");
+		if(r.nb < 0) return;
 
 		if(list_prod[p-1].demandeRessource(r))
 		{
-			System.out.println("demande accordé");
+			System.out.println(id+" recoit "+r.nb+" "+r.type);
 
 			if(!ressource.containsKey(r.type))
 			{
@@ -573,6 +596,7 @@ public class JoueurImpl extends JoueurPOA
 		switch(list_joueur[j].estVole(r))
 		{
 			case 1:
+				System.out.println("Joueur "+id+" vole");
 				//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 
 				System.out.println(id+" vole");
