@@ -47,9 +47,9 @@ module StratD
 		oneway void gameLoop();
 		void donneTour();
 		long estVole(in Ressource r);
-		void observe(in long idProd, in Ressource r);
-		void arretJoueur();
 		void terminaison();
+		void finPartie();
+		void apprentissageRessource(in long id, in Ressource r);
 	};
 
 

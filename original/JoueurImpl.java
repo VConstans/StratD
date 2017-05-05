@@ -22,6 +22,7 @@ public class JoueurImpl extends JoueurPOA
 	Coordinateur coord;
 	ThreadRun thread;
 	int id;
+	Random rand = new Random();
 
 	Producteur[] list_prod;
 	Joueur[] list_joueur;
@@ -66,25 +67,25 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	public void donneTour()// throws InterruptedException
+	public void donneTour()
 	{
 		try
 		{
-		tour.lock();
+			tour.lock();
 
-		try
-		{
-			while(!mon_tour)
+			try
 			{
-				finTour.await();
+				while(!mon_tour)
+				{
+					finTour.await();
+				}
+				mon_tour = false;
+				entrerTour.signal();
 			}
-			mon_tour = false;
-			entrerTour.signal();
-		}
-		finally
-		{
-			tour.unlock();
-		}
+			finally
+			{
+				tour.unlock();
+			}
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
 	}
@@ -156,32 +157,12 @@ public class JoueurImpl extends JoueurPOA
 
 	public void ajoutObservateur(Joueur j)
 	{
-		
-		//System.out.println(id+") ajoute obs");
 		observateur.add(j);
 	}
 
 	public void suppObservateur(Joueur j)
 	{
-		//System.out.println(id+") supp obs");
-		if(!observateur.remove(j))
-		{
-			//System.out.println("Erreur suppression observateur");
-		}
-	}
-
-
-	public void observe(int idProd,Ressource r)
-	{
-		//TODO supprimer methode et appeler direct apprentissage si elle reste vide
-		apprentissageRessource(idProd,r);
-	}
-
-
-	public void arretJoueur()
-	{
-		//TODO inutile si juste un appel
-		finPartie();
+		observateur.remove(j);
 	}
 
 
@@ -257,12 +238,13 @@ public class JoueurImpl extends JoueurPOA
 						int id_joueur_a_voler;
 
 						do {
-							id_joueur_a_voler = (int)(Math.random()*(float)(list_joueur.length -1));
-						} while (id_joueur_a_voler == id-1);
+							id_joueur_a_voler = rand.nextInt(list_joueur.length -1)+1;
+							System.out.println(id+"=============>"+id_joueur_a_voler);
+						} while (id_joueur_a_voler == id);
 
-						int qte = (int)(Math.random()*80.0);
+						int qte = rand.nextInt(79)+1;
 
-						vole(id_joueur_a_voler+1, new Ressource(ressourceCritique,qte));
+						vole(id_joueur_a_voler, new Ressource(ressourceCritique,qte));
 					}
 					else
 					{
@@ -419,9 +401,13 @@ public class JoueurImpl extends JoueurPOA
 		{
 			return -1;
 		}
+		else if(prodPotentiel.size() == 1)
+		{
+			return prodPotentiel.get(0);
+		}
 		else
 		{
-			int idx = (int)(Math.random()*(float)(prodPotentiel.size()-1));
+			int idx = rand.nextInt(prodPotentiel.size()-1);
 			System.out.println("index choisie "+idx);
 			return prodPotentiel.get(idx);
 		}
@@ -460,7 +446,7 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void finPartie()
+	public void finPartie()
 	{
 		if(!fini)
 		{
@@ -477,13 +463,11 @@ public class JoueurImpl extends JoueurPOA
 	private void stopJoueur()
 	{
 		coord.signalJoueurStopper();
-		//TODO arret orb et fin programme
 	}
 
 
 	private void envoieRessource()
 	{
-		System.out.println("Envoie des ressources");
 		for(Map.Entry<String,Integer> entree : ((ressource.getTab()).entrySet()))
 		{
 			coord.recuperationRessourceJoueur(id,entree.getKey(),entree.getValue());
@@ -491,24 +475,24 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void prendTour()// throws InterruptedException
+	private void prendTour()
 	{
 		try
 		{
-		tour.lock();
-		try
-		{
-			while(mon_tour)
+			tour.lock();
+			try
 			{
-				entrerTour.await();
+				while(mon_tour)
+				{
+					entrerTour.await();
+				}
+				mon_tour = true;
+				finTour.signal();
 			}
-			mon_tour = true;
-			finTour.signal();
-		}
-		finally
-		{
-			tour.unlock();
-		}
+			finally
+			{
+				tour.unlock();
+			}
 		} catch (InterruptedException e)
 		{ System.out.println("InterruptedException");}
 
@@ -519,7 +503,6 @@ public class JoueurImpl extends JoueurPOA
 	{
 		observe = true;
 		
-		//System.out.println(id+") observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
@@ -534,7 +517,6 @@ public class JoueurImpl extends JoueurPOA
 	{
 		observe = false;
 
-		//System.out.println(id+") arrete observe");
 		int i;
 
 		for(i=0;i<list_joueur.length;i++)
@@ -545,7 +527,7 @@ public class JoueurImpl extends JoueurPOA
 	}
 
 
-	private void apprentissageRessource(int id, Ressource r)
+	public void apprentissageRessource(int id, Ressource r)
 	{
 			connaissanceRessource[id-1]=r.type;
 	}
@@ -570,10 +552,6 @@ public class JoueurImpl extends JoueurPOA
 			Timestamp time = new Timestamp(System.currentTimeMillis());
 			listTransaction.add(new Transaction(time.getTime(),id,p,r,false,false));
 		}
-		else
-		{
-//			System.out.println("Demande impossible");
-		}
 	}
 
 
@@ -583,7 +561,7 @@ public class JoueurImpl extends JoueurPOA
 
 		for(i=0;i<observateur.size();i++)
 		{
-			observateur.get(i).observe(idProd,r);
+			observateur.get(i).apprentissageRessource(idProd,r);
 		}
 	}
 
@@ -597,7 +575,6 @@ public class JoueurImpl extends JoueurPOA
 		{
 			case 1:
 				System.out.println("Joueur "+id+" vole");
-				//System.out.println(id+") ressource "+r.type+" avant vole "+ressource[r.type]);
 
 				System.out.println(id+" vole");
 				if(ressource.get(r.type) == -1)
@@ -608,15 +585,10 @@ public class JoueurImpl extends JoueurPOA
 				{
 					ressource.put(r.type,ressource.get(r.type)+r.nb);
 				}
-					//System.out.println(id+") ressource après vole "+ressource[r.type]);
-				//	annonceVole(listTransaction.size()-1);
 
 				break;
 			case -1:
 				penaliseVole(listTransaction.size()-1);
-				break;
-			case 0:
-	//			System.out.println("Demande impossible");
 				break;
 		}
 	}
@@ -639,11 +611,9 @@ public class JoueurImpl extends JoueurPOA
 
 	private boolean verifRessource()
 	{
-//		System.out.println("=================================");
 		int i;
 		for(Map.Entry<String,Integer> entree : ((besoin.getTab()).entrySet()))
 		{
-//			System.out.println("Besoin "+entree.getValue()+" Possede "+ressource.get(entree.getKey()));
 			
 			if(ressource.get(entree.getKey()) < entree.getValue())
 			{
@@ -705,8 +675,6 @@ public class JoueurImpl extends JoueurPOA
 				System.out.println("Pb pour contacter le serveur") ;
 				System.exit(1) ;
 			}
-			else
-			//	System.out.println("Annonce du serveur : " + client.serveur.ping()) ;
 
 			// lancer l'ORB dans un thread
 			joueur.thread = new ThreadRun(orb) ;
@@ -714,17 +682,15 @@ public class JoueurImpl extends JoueurPOA
 
 			joueur.connection();
 
-			//joueur.thread.join();
 			joueur.lock.lock();
 			try{
 				joueur.terminaison.await();
 			} finally {
-			joueur.lock.unlock();
+				joueur.lock.unlock();
 			}
 
 			System.out.println("Fin");
 			
-		//	prod.loop() ;
 		}
 		catch (Exception e)
 		{
@@ -733,9 +699,6 @@ public class JoueurImpl extends JoueurPOA
 		}
 		finally
 		{
-			// shutdown
-	//		if (joueur != null)
-		//	joueur.thread.shutdown() ;
 			System.exit(0);
 		}
 	}

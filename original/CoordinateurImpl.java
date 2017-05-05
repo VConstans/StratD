@@ -124,7 +124,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 	}
 
 
-	public void finTour()// throws InterruptedException
+	public void finTour()
 	{
 		try
 		{
@@ -151,7 +151,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	synchronized public void finJoueur(int id, Transaction[] tabTransaction)
 	{
-		//TODO faire classement en fct du mode de jeu
 		if(modeEval == 1)
 		{
 			classement[positionDernierClassement] = id;
@@ -168,7 +167,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 			for(i=0;i<list_joueur.size();i++)
 			{
-				list_joueur.get(i).arretJoueur();
+				list_joueur.get(i).finPartie();
 			}
 		}
 	}
@@ -185,8 +184,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	public void recuperationRessourceJoueur(int id, String r, int nb)
 	{
-		if(ressource_joueur_fini[id-1] == null)
-			System.out.println("====================================> null");
 		ressource_joueur_fini[id -1].put(r,nb);
 	}
 
@@ -197,7 +194,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 		if(joueurStopper == list_joueur.size())
 		{
-			//TODO afficher classement et arreter programme
 			if(modeEval == 0)
 			{
 				calculClassement();
@@ -232,7 +228,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 	private void terminaisonCoord()
 	{
 	
-		System.out.println("UNLOCK");
 		lock.lock();
 		try {
 			terminaison.signal();
@@ -253,7 +248,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 		{
 			for(Map.Entry<String,Integer> entree : ((ressource_joueur_fini[i].getTab()).entrySet()))
 			{
-				//TODO
 				somme+=entree.getValue().intValue();
 			}
 			nbRessourceParJoueur.put(new Integer(i+1),new Integer(somme));
@@ -261,7 +255,6 @@ public class CoordinateurImpl extends CoordinateurPOA
 			somme=0;
 		}
 
-		//TODO copier si on veut grader les totaux des ressources
 
 
 		int max = 0;
@@ -281,17 +274,10 @@ public class CoordinateurImpl extends CoordinateurPOA
 			classement[i]=idMax;
 			tmp.remove(new Integer(idMax));
 		}
-
-
-		System.out.println("Classement:");
-
-
-
-
 	}
 
 
-	private void commenceTour()// throws InterruptedException
+	private void commenceTour()
 	{
 		try
 		{
@@ -363,11 +349,12 @@ public class CoordinateurImpl extends CoordinateurPOA
 
 	private void generationListeBesoin(String[] ressource)
 	{
+		Random rand = new Random();
 		int i;
 
 		for(i=0;i<ressource.length;i++)
 		{
-			int besoin = (int)(Math.random()*(float)80);
+			int besoin = rand.nextInt(79)+1;
 			Ressource r = new Ressource(ressource[i],besoin);
 			list_besoin.add(r);
 		}
@@ -446,7 +433,7 @@ public class CoordinateurImpl extends CoordinateurPOA
 	{
 		if (args.length != 7)
 		{
-			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <mode de jeu: L/R> " + "<mode de fin: F/A>"+ " mode d'évaluation: P/R "+ " nb de joueur" + " nb de prod" ) ;
+			System.out.println("Usage : java ServeurChatImpl" + " <machineServeurDeNoms>" + " <No Port>" + " <mode de jeu: L/R> " + "<mode de fin: F/A>"+ " <mode d'évaluation: P/R> "+ " <nb de joueur>" + " <nb de prod>" ) ;
 			return ;
 		}
 		try
@@ -495,6 +482,8 @@ public class CoordinateurImpl extends CoordinateurPOA
 			System.out.println("Fin du jeu");
 
 			int i;
+
+			System.out.println("Classement:");
 
 			for(i=0;i<coord.classement.length;i++)
 			{

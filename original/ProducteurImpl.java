@@ -42,7 +42,6 @@ public class ProducteurImpl extends ProducteurPOA
 
 	public ProducteurImpl(String type,int nb)
 	{
-		System.out.println(type);
 		ressourceType=type;
 		nbRessource=nb;
 		produit=0;
@@ -120,7 +119,7 @@ public class ProducteurImpl extends ProducteurPOA
 	}
 
 	synchronized public Ressource sondeProd()
-	{	System.out.println("-----------> "+produit);
+	{
 		return new Ressource(ressourceType,produit);
 	}
 
@@ -148,7 +147,6 @@ public class ProducteurImpl extends ProducteurPOA
 			while(true)
 			{
 				prendTour();
-				System.out.println(id);
 				production();
 				coord.finTour();
 			}
@@ -196,7 +194,7 @@ public class ProducteurImpl extends ProducteurPOA
 
 		if (args.length != 4)
 		{
-			System.out.println("Usage : java ClientChatImpl" + " <machineServeurDeNoms>" + " <No Port>" +"<num Ressource>" + "Nb de ressource") ;
+			System.out.println("Usage : java ProducteurImpl" + " <machineServeurDeNoms>" + " <No Port>" +"<num Ressource>" + "Nb de ressource") ;
 			return ;
 		}
 		try
@@ -209,7 +207,7 @@ public class ProducteurImpl extends ProducteurPOA
 			rootpoa.the_POAManager().activate() ;
 
 			// creer l'objet qui sera appele' depuis le serveur
-			prod = new ProducteurImpl(args[2],Integer.parseInt(args[3])) ;	//TODO changer parametre constructeur
+			prod = new ProducteurImpl(args[2],Integer.parseInt(args[3])) ;
 			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(prod) ;
 			prod.producteur = ProducteurHelper.narrow(ref) ; 
 			if (prod == null)
@@ -229,8 +227,6 @@ public class ProducteurImpl extends ProducteurPOA
 				System.out.println("Pb pour contacter le serveur") ;
 				System.exit(1) ;
 			}
-			else
-			//	System.out.println("Annonce du serveur : " + client.serveur.ping()) ;
 
 			// lancer l'ORB dans un thread
 			prod.thread = new ThreadRun(orb) ;
@@ -253,10 +249,6 @@ public class ProducteurImpl extends ProducteurPOA
 		}
 		finally
 		{
-			// shutdown
-		//	if (prod != null)
-		//	prod.thread.shutdown() ;
-
 			System.exit(0);
 		}
 	}
